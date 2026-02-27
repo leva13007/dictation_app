@@ -1,0 +1,38 @@
+body{
+  padding: 2rem;
+  background-color: #7497ac;
+}
+
+.App{
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.Controls{
+  display: flex;
+  gap: 0.5rem;
+}
+
+.Input{
+  textarea{
+    width: 100%;
+    height: 500px;
+    font-size: 1rem;
+    padding: 0.25rem;
+    resize: unset;
+    background-color: #aac4d3;
+  }
+}
+
+.Hint{
+  min-height: 50px;
+}
+
+.HintText-show{
+  display: block;
+}
+
+.HintText-hide{
+  display: none;
+}
