@@ -9,7 +9,13 @@ const App = () => {
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   const play = () => {
-    audioRef?.current?.play();
+    const audio = audioRef?.current;
+    if (!audio) return;
+    if (audio!.paused) {
+      audio!.play();
+    } else {
+      audio!.pause()
+    }
   }
 
   const rePlay = () => {
@@ -20,18 +26,12 @@ const App = () => {
   }
 
   const prev = () => {
-    if (currentIndex > 0) {
-      setCurrentIndex(currentIndex - 1);
-      setShowHint(false);
-      // play();
-    }
+    setCurrentIndex(prev => prev > 1 ? prev - 1 : 0);
+    setShowHint(false);
   }
   const next = () => {
-    if (currentIndex < playlist.length - 1) {
-      setCurrentIndex(currentIndex + 1);
-      setShowHint(false);
-      // play();
-    }
+    setCurrentIndex(prev => prev < playlist.length - 1 ? prev + 1 : prev);
+    setShowHint(false);
   }
 
   const [playbackRate, setPlaybackRate] = useState<number>(1);
@@ -49,7 +49,9 @@ const App = () => {
 
   useEffect(() => {
     const handler = (event: KeyboardEvent) => {
+      
       const keyName = event.key;
+      console.log("handler", keyName)
       if (event.ctrlKey) {        
         if (keyName === 'q') prev();
         if (keyName === 'w') play();
