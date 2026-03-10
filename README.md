@@ -20,6 +20,20 @@ npm run preview
 ```
 Use this pair to create a production bundle and sanity-check it locally.
 
+## GitHub Pages Deploy
+Use a repository base path when building (replace `dictation_app` with your repo name):
+```bash
+npm run build -- --base=/dictation_app/
+```
+After deploying the `dist/` folder to GitHub Pages, audio and playlists are loaded from:
+- `public/dics/<dic-id>/playlist.json`
+- `public/dics/<dic-id>/sounds/*.mp3`
+
+You can open different dictations with a query param:
+- `?dic=0001`
+- `?dic=0002`
+- `?dic=0003`
+
 ## Keyboard Shortcuts
 All shortcuts use `Ctrl` + [key] for consistency across platforms (Windows, macOS, Linux).:
 
@@ -37,8 +51,16 @@ All shortcuts use `Ctrl` + [key] for consistency across platforms (Windows, macO
 - Hints reveal the text for the current sentence; the textarea underneath is free-form for typing what you hear.
 
 ## Managing Dictations
-- Audio and list files live under `public/dics/0001/` (feel free to add additional folders for new sets).
-- The playlist metadata is defined in `src/dics/0001/playlist.ts`; update or duplicate this file to point to new audio files and hint text.
+- Keep each set under `public/dics/<dic-id>/`.
+- Put the playlist in `public/dics/<dic-id>/playlist.json`.
+- Put audio files in `public/dics/<dic-id>/sounds/`.
+- Each playlist item should follow:
+```json
+{
+  "id": 1,
+  "text": "Sentence text",
+  "audio": "dics/0002/sounds/0002-01.mp3"
+}
+```
 
 That is all that is needed to run or tweak the app. Happy dictating!
-
