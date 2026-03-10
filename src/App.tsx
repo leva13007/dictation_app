@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { playlist } from './dics/0001/playlist';
+import { playlist } from './dics/0002/playlist';
 import styles from './App.module.css';
 
 const App = () => {
@@ -64,6 +64,9 @@ const App = () => {
     return () => window.removeEventListener("keydown", handler);
   }, []);
 
+
+  const all = () => {}
+
   return (
     <div className={styles.App}>
       <h1>Dictation!</h1>
@@ -75,6 +78,7 @@ const App = () => {
         <button onClick={play}>Play</button>
         <button onClick={rePlay}>RePlay</button>
         <button onClick={next}>Next</button>
+        <button onClick={all}>All</button>
       </div>
       <div className={styles.Controls}>
         <button onClick={() => setPlaybackSpeed(0.5)}>0.5</button>

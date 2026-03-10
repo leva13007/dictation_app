@@ -1,4 +1,5 @@
-The Reading Crisis in Modern Society
+# The Reading Crisis in Modern Society
+
 Over the past twenty years several studies have highlighted a decline in reading habits.
 In the United States in 2003 twenty eight percent of adults reported reading for pleasure on a typical day.
 By 2023 this figure had fallen to sixteen percent.
