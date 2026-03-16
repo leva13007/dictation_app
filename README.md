@@ -26,6 +26,7 @@ Use a repository base path when building (replace `dictation_app` with your repo
 npm run build -- --base=/dictation_app/
 ```
 After deploying the `dist/` folder to GitHub Pages, audio and playlists are loaded from:
+- `public/dics/index.json`
 - `public/dics/<dic-id>/playlist.json`
 - `public/dics/<dic-id>/sounds/*.mp3`
 
@@ -52,6 +53,14 @@ All shortcuts use `Ctrl` + [key] for consistency across platforms (Windows, macO
 
 ## Managing Dictations
 - Keep each set under `public/dics/<dic-id>/`.
+- Maintain `public/dics/index.json` with this strict shape:
+```json
+{
+  "dics": [
+    { "id": "0001", "title": "My Dictation" }
+  ]
+}
+```
 - Put the playlist in `public/dics/<dic-id>/playlist.json`.
 - Put audio files in `public/dics/<dic-id>/sounds/`.
 - Each playlist item should follow:

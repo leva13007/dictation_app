@@ -12,6 +12,26 @@ body{
 .Controls{
   display: flex;
   gap: 0.5rem;
+  align-items: center;
+}
+
+.SourceForm{
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+
+  input{
+    width: min(700px, 100%);
+    font-size: 1rem;
+    padding: 0.35rem 0.5rem;
+    background-color: #d4e2ea;
+    border: 1px solid #5d8096;
+  }
+}
+
+.Error{
+  color: #8a1a1a;
+  font-weight: 600;
 }
 
 .Input{
