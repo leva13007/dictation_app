@@ -1,4 +1,4 @@
-import { type FormEvent, useEffect, useMemo, useRef, useState } from 'react';
+import { type FormEvent, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import styles from './App.module.css';
 
 type PlaylistRecord = {
@@ -188,7 +188,7 @@ const App = () => {
     void loadPlaylist();
   }, [selectedDicId, sourceBaseUrl]);
 
-  const play = () => {
+  const play = useCallback(() => {
     const audio = audioRef?.current;
     if (!audio) return;
     if (audio.paused) {
@@ -196,24 +196,24 @@ const App = () => {
     } else {
       audio.pause();
     }
-  };
+  }, []);
 
-  const rePlay = () => {
+  const rePlay = useCallback(() => {
     if (audioRef?.current) {
       audioRef.current.currentTime = 0;
       void audioRef.current.play();
     }
-  };
+  }, []);
 
-  const prev = () => {
+  const prev = useCallback(() => {
     setCurrentIndex(prev => prev > 1 ? prev - 1 : 0);
     setShowHint(false);
-  };
-  const next = () => {
+  }, []);
+  const next = useCallback(() => {
     console.log("Next", currentIndex, playlist.length)
     setCurrentIndex(prev => prev < playlist.length - 1 ? prev + 1 : prev);
     setShowHint(false);
-  };
+  }, [playlist.length, currentIndex]);
 
   const [playbackRate, setPlaybackRate] = useState<number>(1);
   const setPlaybackSpeed = (rate: number) => {
@@ -224,9 +224,9 @@ const App = () => {
   };
 
   const [showHint, setShowHint] = useState<boolean>(false);
-  const hint = () => {
+  const hint = useCallback(() => {
     setShowHint(prev => !prev);
-  };
+  }, []);
 
   useEffect(() => {
     const handler = (event: KeyboardEvent) => {
@@ -242,7 +242,7 @@ const App = () => {
     };
     window.addEventListener("keydown", handler);
     return () => window.removeEventListener("keydown", handler);
-  }, []);
+  }, [prev, play, rePlay, next, hint]);
 
   useEffect(() => {
     if (audioRef.current) {
