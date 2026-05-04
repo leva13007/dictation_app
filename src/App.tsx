@@ -1,6 +1,8 @@
 import { type FormEvent, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import styles from './App.module.css';
 
+declare const __APP_VERSION__: string;
+
 type PlaylistRecord = {
   id: number;
   text: string;
@@ -107,7 +109,7 @@ const App = () => {
     return new URLSearchParams(window.location.search).get('source');
   }, []);
   const defaultSourceBase = useMemo(
-    () => new URL(import.meta.env.BASE_URL, window.location.origin).toString().replace(/\/?$/, '/'),
+    () => new URL(import.meta.env.BASE_URL, window.location.origin).toString().replace(/\/?$/, '/'), // https://leva13007.github.io/dictations
     [],
   );
 
@@ -266,7 +268,7 @@ const App = () => {
   if (isCatalogLoading) {
     return (
       <div className={styles.App}>
-        <h1>Dictation!</h1>
+        <h1>Dictation <small>v{__APP_VERSION__}</small></h1>
         <div>Loading source...</div>
       </div>
     );
@@ -274,7 +276,7 @@ const App = () => {
 
   return (
     <div className={styles.App}>
-      <h1>Dictation!</h1>
+      <h1>Dictation <small>v{__APP_VERSION__}</small></h1>
       <form className={styles.SourceForm} onSubmit={submitSource}>
         <label htmlFor="source-url">Source URL</label>
         <input
@@ -282,7 +284,7 @@ const App = () => {
           type="url"
           value={sourceInput}
           onChange={event => setSourceInput(event.target.value)}
-          placeholder="https://example.com/"
+          placeholder="https://leva13007.github.io/dictations"
           required
         />
         <button type="submit">Load Source</button>
@@ -325,6 +327,7 @@ const App = () => {
           <div className={styles.Controls}>
             <button onClick={() => setPlaybackSpeed(0.5)}>0.5</button>
             <button onClick={() => setPlaybackSpeed(0.75)}>0.75</button>
+            <button onClick={() => setPlaybackSpeed(0.85)}>0.85</button>
             <button onClick={() => setPlaybackSpeed(1)}>1</button>
             <button onClick={() => setPlaybackSpeed(1.25)}>1.25</button>
           </div>
@@ -333,7 +336,7 @@ const App = () => {
             <div className={showHint ? styles["HintText-show"] : styles["HintText-hide"]}>{currentSentence.text}</div>
           </div>
           <div className={styles.Input}>
-            <textarea name="" id=""></textarea>
+            <textarea></textarea>
           </div>
         </>
       )}
