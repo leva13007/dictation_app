@@ -1,0 +1,1242 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light" data-font-size="normal">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>My Dictations — Dictify</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    /* ── TOKENS ─────────────────────────────────────────── */
+    :root {
+      --hue-brand: 230; --hue-success: 142; --hue-error: 25;
+      --hue-warning: 75; --hue-neutral: 230;
+      --neutral-0:   oklch(100%  0      var(--hue-neutral));
+      --neutral-50:  oklch(97%   0.004  var(--hue-neutral));
+      --neutral-100: oklch(94%   0.006  var(--hue-neutral));
+      --neutral-200: oklch(88%   0.008  var(--hue-neutral));
+      --neutral-300: oklch(78%   0.010  var(--hue-neutral));
+      --neutral-400: oklch(65%   0.012  var(--hue-neutral));
+      --neutral-500: oklch(52%   0.012  var(--hue-neutral));
+      --neutral-600: oklch(40%   0.010  var(--hue-neutral));
+      --neutral-700: oklch(30%   0.009  var(--hue-neutral));
+      --neutral-800: oklch(20%   0.008  var(--hue-neutral));
+      --neutral-900: oklch(13%   0.007  var(--hue-neutral));
+      --neutral-950: oklch(8%    0.005  var(--hue-neutral));
+      --brand-300: oklch(80% 0.14 var(--hue-brand));
+      --brand-400: oklch(68% 0.18 var(--hue-brand));
+      --brand-500: oklch(56% 0.22 var(--hue-brand));
+      --brand-600: oklch(46% 0.22 var(--hue-brand));
+      --brand-700: oklch(36% 0.20 var(--hue-brand));
+      /* Semantic – light */
+      --bg-base:        var(--neutral-50);
+      --bg-surface:     var(--neutral-0);
+      --bg-elevated:    var(--neutral-0);
+      --bg-sunken:      var(--neutral-100);
+      --bg-interactive: var(--neutral-100);
+      --text-primary:     var(--neutral-900);
+      --text-secondary:   var(--neutral-600);
+      --text-tertiary:    var(--neutral-400);
+      --text-placeholder: var(--neutral-400);
+      --text-disabled:    var(--neutral-300);
+      --text-on-accent:   oklch(100% 0 0);
+      --border-soft:   var(--neutral-200);
+      --border-medium: var(--neutral-300);
+      --border-strong: var(--neutral-500);
+      --accent:        var(--brand-500);
+      --accent-hover:  var(--brand-600);
+      --accent-subtle: oklch(95% 0.04 var(--hue-brand));
+      --accent-text:   var(--brand-600);
+      --success:        oklch(55% 0.18 var(--hue-success));
+      --success-subtle: oklch(95% 0.06 var(--hue-success));
+      --error:          oklch(55% 0.20 var(--hue-error));
+      --error-subtle:   oklch(96% 0.07 var(--hue-error));
+      --warning:        oklch(68% 0.16 var(--hue-warning));
+      --warning-subtle: oklch(96% 0.07 var(--hue-warning));
+      --shadow-sm: 0 1px 2px  oklch(0% 0 0 / 0.06);
+      --shadow-md: 0 4px 12px oklch(0% 0 0 / 0.08);
+      --shadow-lg: 0 8px 24px oklch(0% 0 0 / 0.10);
+      /* Level hues */
+      --level-hue-a1: 145; --level-hue-a2: 165;
+      --level-hue-b1: 210; --level-hue-b2: 230;
+      --level-hue-c1: 280; --level-hue-c2: 310;
+      /* Font */
+      --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+      --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+      --font-scale: 1;
+      --text-xs:   calc(0.75rem  * var(--font-scale));
+      --text-sm:   calc(0.875rem * var(--font-scale));
+      --text-base: calc(1rem     * var(--font-scale));
+      --text-md:   calc(1.125rem * var(--font-scale));
+      --text-lg:   calc(1.25rem  * var(--font-scale));
+      --text-xl:   calc(1.5rem   * var(--font-scale));
+      --text-2xl:  calc(1.875rem * var(--font-scale));
+      --text-3xl:  calc(2.25rem  * var(--font-scale));
+      --leading-tight: 1.25; --leading-normal: 1.5; --leading-loose: 1.75;
+      --weight-regular: 400; --weight-medium: 500;
+      --weight-semibold: 600; --weight-bold: 700;
+      /* Spacing */
+      --space-1: 0.25rem; --space-2: 0.5rem; --space-3: 0.75rem;
+      --space-4: 1rem;    --space-5: 1.25rem; --space-6: 1.5rem;
+      --space-8: 2rem;    --space-10: 2.5rem; --space-12: 3rem;
+      --space-16: 4rem;
+      /* Radii */
+      --radius-sm: 4px; --radius-md: 8px; --radius-lg: 12px;
+      --radius-xl: 16px; --radius-2xl: 24px; --radius-full: 9999px;
+    }
+
+    /* ── DARK THEME ─────────────────────────────────────── */
+    [data-theme="dark"] {
+      --bg-base:        var(--neutral-950);
+      --bg-surface:     var(--neutral-900);
+      --bg-elevated:    var(--neutral-800);
+      --bg-sunken:      oklch(10% 0.006 var(--hue-neutral));
+      --bg-interactive: var(--neutral-800);
+      --text-primary:    var(--neutral-50);
+      --text-secondary:  var(--neutral-300);
+      --text-placeholder:var(--neutral-500);
+      --text-disabled:   var(--neutral-700);
+      --border-soft:   var(--neutral-800);
+      --border-medium: var(--neutral-700);
+      --border-strong: var(--neutral-500);
+      --accent:        var(--brand-400);
+      --accent-hover:  var(--brand-300);
+      --accent-subtle: oklch(18% 0.06 var(--hue-brand));
+      --accent-text:   var(--brand-300);
+      --success:        oklch(65% 0.18 var(--hue-success));
+      --success-subtle: oklch(20% 0.08 var(--hue-success));
+      --error:          oklch(65% 0.18 var(--hue-error));
+      --error-subtle:   oklch(18% 0.09 var(--hue-error));
+      --warning:        oklch(75% 0.15 var(--hue-warning));
+      --warning-subtle: oklch(20% 0.08 var(--hue-warning));
+      --shadow-sm: 0 1px 3px oklch(0% 0 0 / 0.30);
+      --shadow-md: 0 4px 12px oklch(0% 0 0 / 0.35);
+      --shadow-lg: 0 8px 24px oklch(0% 0 0 / 0.40);
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root:not([data-theme="light"]) {
+        --bg-base:        var(--neutral-950);
+        --bg-surface:     var(--neutral-900);
+        --bg-elevated:    var(--neutral-800);
+        --bg-sunken:      oklch(10% 0.006 var(--hue-neutral));
+        --bg-interactive: var(--neutral-800);
+        --text-primary:    var(--neutral-50);
+        --text-secondary:  var(--neutral-300);
+        --text-placeholder:var(--neutral-500);
+        --text-disabled:   var(--neutral-700);
+        --border-soft:   var(--neutral-800);
+        --border-medium: var(--neutral-700);
+        --border-strong: var(--neutral-500);
+        --accent:        var(--brand-400);
+        --accent-hover:  var(--brand-300);
+        --accent-subtle: oklch(18% 0.06 var(--hue-brand));
+        --accent-text:   var(--brand-300);
+        --success:        oklch(65% 0.18 var(--hue-success));
+        --success-subtle: oklch(20% 0.08 var(--hue-success));
+        --error:          oklch(65% 0.18 var(--hue-error));
+        --error-subtle:   oklch(18% 0.09 var(--hue-error));
+        --warning:        oklch(75% 0.15 var(--hue-warning));
+        --warning-subtle: oklch(20% 0.08 var(--hue-warning));
+        --shadow-sm: 0 1px 3px oklch(0% 0 0 / 0.30);
+        --shadow-md: 0 4px 12px oklch(0% 0 0 / 0.35);
+        --shadow-lg: 0 8px 24px oklch(0% 0 0 / 0.40);
+      }
+    }
+
+    [data-font-size="small"]  { --font-scale: 0.875; }
+    [data-font-size="normal"] { --font-scale: 1;     }
+    [data-font-size="large"]  { --font-scale: 1.125; }
+    [data-font-size="xl"]     { --font-scale: 1.25;  }
+
+    /* ── BASE RESET ─────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; }
+    * { margin: 0; padding: 0; }
+    html { font-size: 16px; -webkit-text-size-adjust: 100%; }
+    body {
+      font-family: var(--font-sans);
+      font-size: var(--text-base);
+      font-weight: var(--weight-regular);
+      line-height: var(--leading-normal);
+      color: var(--text-primary);
+      background-color: var(--bg-base);
+      min-height: 100dvh;
+      -webkit-font-smoothing: antialiased;
+    }
+    h1,h2,h3,h4,h5,h6 { font-weight: var(--weight-semibold); line-height: var(--leading-tight); color: var(--text-primary); }
+    p { color: var(--text-secondary); }
+    a { color: var(--accent-text); text-decoration: underline; text-underline-offset: 3px; }
+    a:hover { color: var(--accent-hover); }
+    ul, ol { list-style: none; }
+    img, svg, video { display: block; max-width: 100%; }
+    input, textarea, select, button { font: inherit; color: inherit; }
+    button { cursor: pointer; border: none; background: none; display: inline-flex; align-items: center; justify-content: center; gap: var(--space-2); }
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--border-medium); border-radius: var(--radius-full); }
+    .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border-width: 0; }
+
+    /* ── LAYOUT ─────────────────────────────────────────── */
+    .list-layout { display: flex; flex-direction: column; min-height: 100dvh; background-color: var(--bg-base); }
+
+    .app-topbar {
+      position: sticky; top: 0; z-index: 20;
+      background-color: var(--bg-surface);
+      border-bottom: 1px solid var(--border-soft);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+    }
+    .app-topbar__inner {
+      display: flex; align-items: center; gap: var(--space-4);
+      height: 3.5rem; max-width: 1100px;
+      margin-inline: auto; padding-inline: var(--space-6);
+    }
+    .app-topbar__logo {
+      display: inline-flex; align-items: center; gap: var(--space-2);
+      font-size: var(--text-lg); font-weight: var(--weight-bold);
+      color: var(--accent); text-decoration: none;
+      letter-spacing: -0.02em; flex-shrink: 0;
+    }
+    .app-topbar__logo svg { width: 18px; height: 18px; }
+    .app-topbar__nav { display: flex; align-items: center; gap: var(--space-1); flex: 1; }
+    .app-topbar__link {
+      display: inline-flex; align-items: center; gap: var(--space-1);
+      font-size: var(--text-sm); font-weight: var(--weight-medium);
+      color: var(--text-secondary); text-decoration: none;
+      padding: var(--space-1) var(--space-3); border-radius: var(--radius-md);
+      transition: background-color 0.1s, color 0.1s; white-space: nowrap;
+    }
+    .app-topbar__link:hover { background-color: var(--bg-sunken); color: var(--text-primary); }
+    .app-topbar__link.is-active { background-color: var(--accent-subtle); color: var(--accent-text); }
+    .app-topbar__actions { display: flex; align-items: center; gap: var(--space-2); flex-shrink: 0; }
+    .icon-dark { display: none; }
+    .icon-light { display: inline; }
+    [data-theme="dark"] .icon-dark  { display: inline; }
+    [data-theme="dark"] .icon-light { display: none; }
+    @media (prefers-color-scheme: dark) {
+      :root:not([data-theme="light"]) .icon-dark  { display: inline; }
+      :root:not([data-theme="light"]) .icon-light { display: none; }
+    }
+
+    .page-main {
+      flex: 1; max-width: 1100px; width: 100%;
+      margin-inline: auto; padding: var(--space-8) var(--space-6) var(--space-16);
+      display: flex; flex-direction: column; gap: var(--space-6);
+    }
+
+    .app-footer { border-top: 1px solid var(--border-soft); background-color: var(--bg-surface); }
+    .app-footer__inner {
+      max-width: 1100px; margin-inline: auto;
+      padding: var(--space-4) var(--space-6);
+      display: flex; align-items: center; justify-content: space-between; gap: var(--space-4);
+    }
+    .app-footer__brand { font-size: var(--text-sm); font-weight: var(--weight-semibold); color: var(--text-secondary); }
+    .app-footer__copy { font-size: var(--text-xs); color: var(--text-tertiary); }
+
+    /* ── BUTTON ─────────────────────────────────────────── */
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center;
+      gap: var(--space-2); padding: var(--space-3) var(--space-5);
+      border: 1px solid transparent; border-radius: var(--radius-md);
+      font-size: var(--text-sm); font-weight: var(--weight-medium);
+      line-height: var(--leading-tight); cursor: pointer;
+      text-decoration: none; white-space: nowrap;
+      transition: background-color 0.15s, border-color 0.15s, color 0.15s, box-shadow 0.15s;
+    }
+    .btn:disabled { opacity: 0.45; cursor: not-allowed; pointer-events: none; }
+    .btn--primary { background-color: var(--accent); color: var(--text-on-accent); border-color: var(--accent); }
+    .btn--primary:hover:not(:disabled) { background-color: var(--accent-hover); border-color: var(--accent-hover); }
+    .btn--secondary { background-color: var(--bg-surface); color: var(--text-primary); border-color: var(--border-medium); }
+    .btn--secondary:hover:not(:disabled) { background-color: var(--bg-interactive); border-color: var(--border-strong); }
+    .btn--ghost { background-color: transparent; color: var(--text-secondary); border-color: transparent; }
+    .btn--ghost:hover:not(:disabled) { background-color: var(--bg-interactive); color: var(--text-primary); }
+    .btn--icon { padding: var(--space-2); width: 2.25rem; height: 2.25rem; border-radius: var(--radius-md); }
+    .btn--sm { padding: var(--space-2) var(--space-3); font-size: var(--text-xs); border-radius: var(--radius-sm); }
+    .btn--sm.btn--icon { padding: var(--space-1); width: 1.75rem; height: 1.75rem; border-radius: var(--radius-sm); }
+
+    /* ── BADGE ──────────────────────────────────────────── */
+    .badge {
+      display: inline-flex; align-items: center;
+      padding: var(--space-1) var(--space-3);
+      border-radius: var(--radius-full);
+      font-size: var(--text-xs); font-weight: var(--weight-semibold);
+      line-height: var(--leading-tight); letter-spacing: 0.03em; white-space: nowrap;
+    }
+    .badge[data-level] {
+      --badge-hue: var(--level-hue-b2);
+      background-color: oklch(92% 0.07 var(--badge-hue));
+      color: oklch(32% 0.16 var(--badge-hue));
+      border: 1px solid oklch(82% 0.11 var(--badge-hue));
+    }
+    [data-theme="dark"] .badge[data-level] {
+      background-color: oklch(22% 0.09 var(--badge-hue));
+      color: oklch(80% 0.14 var(--badge-hue));
+      border-color: oklch(35% 0.12 var(--badge-hue));
+    }
+    .badge[data-level="A1"] { --badge-hue: var(--level-hue-a1); }
+    .badge[data-level="A2"] { --badge-hue: var(--level-hue-a2); }
+    .badge[data-level="B1"] { --badge-hue: var(--level-hue-b1); }
+    .badge[data-level="B2"] { --badge-hue: var(--level-hue-b2); }
+    .badge[data-level="C1"] { --badge-hue: var(--level-hue-c1); }
+    .badge[data-level="C2"] { --badge-hue: var(--level-hue-c2); }
+    .badge--neutral { background-color: var(--bg-sunken); color: var(--text-tertiary); border: 1px solid var(--border-soft); }
+    .badge--accent { background-color: var(--accent-subtle); color: var(--accent-text); border: 1px solid oklch(from var(--accent) l c h / 0.3); }
+
+    /* ── PILL ───────────────────────────────────────────── */
+    .pill {
+      display: inline-flex; align-items: center; gap: var(--space-1);
+      padding: var(--space-1) var(--space-3);
+      background-color: var(--bg-sunken); border: 1px solid var(--border-soft);
+      border-radius: var(--radius-full); font-size: var(--text-xs);
+      font-weight: var(--weight-medium); color: var(--text-secondary);
+      cursor: pointer; white-space: nowrap;
+      transition: background-color 0.15s, border-color 0.15s, color 0.15s;
+    }
+    .pill:hover { background-color: var(--bg-interactive); border-color: var(--border-medium); color: var(--text-primary); }
+    .pill.is-active, .pill[aria-pressed="true"] {
+      background-color: var(--accent-subtle); border-color: var(--accent); color: var(--accent-text);
+    }
+
+    /* ── STATE NAV ──────────────────────────────────────── */
+    .state-nav {
+      background-color: oklch(95% 0.07 75);
+      border-bottom: 1px solid oklch(88% 0.09 75);
+      padding: var(--space-2) var(--space-5);
+      display: flex; align-items: center; gap: var(--space-3);
+      flex-wrap: wrap; font-size: var(--text-xs);
+    }
+    [data-theme="dark"] .state-nav { background-color: oklch(22% 0.06 75); border-bottom-color: oklch(32% 0.08 75); }
+    .state-nav__label { font-size: 10px; font-weight: var(--weight-bold); text-transform: uppercase; letter-spacing: 0.08em; color: oklch(45% 0.08 75); }
+    [data-theme="dark"] .state-nav__label { color: oklch(65% 0.07 75); }
+    .state-nav__sep { width: 1px; height: 12px; background-color: oklch(75% 0.08 75); flex-shrink: 0; }
+    [data-theme="dark"] .state-nav__sep { background-color: oklch(40% 0.08 75); }
+    .state-nav__link { font-weight: var(--weight-medium); color: oklch(38% 0.10 75); text-decoration: none; padding: 2px var(--space-2); border-radius: var(--radius-sm); white-space: nowrap; }
+    [data-theme="dark"] .state-nav__link { color: oklch(78% 0.08 75); }
+    .state-nav__link.is-current { font-weight: var(--weight-bold); color: oklch(28% 0.12 75); text-decoration: underline; text-underline-offset: 2px; }
+    [data-theme="dark"] .state-nav__link.is-current { color: oklch(88% 0.10 75); }
+    .state-nav__link--ext { opacity: 0.75; }
+
+    /* ── PAGE HEADING ───────────────────────────────────── */
+    .list-heading { display: flex; flex-direction: column; gap: var(--space-1); }
+    .list-heading__title { font-size: var(--text-2xl); font-weight: var(--weight-bold); color: var(--text-primary); letter-spacing: -0.02em; line-height: 1.2; }
+    .list-heading__sub { font-size: var(--text-sm); color: var(--text-secondary); }
+
+    /* ── FILTER BAR ─────────────────────────────────────── */
+    .filter-bar {
+      background-color: var(--bg-surface);
+      border: 1px solid var(--border-soft);
+      border-radius: var(--radius-xl);
+      padding: var(--space-4) var(--space-5);
+      display: flex; flex-direction: column; gap: var(--space-4);
+      box-shadow: var(--shadow-sm);
+    }
+    .filter-bar__top { display: flex; align-items: center; gap: var(--space-4); flex-wrap: wrap; }
+    .filter-bar__bottom { display: flex; align-items: center; gap: var(--space-4); flex-wrap: wrap; justify-content: space-between; }
+
+    .filter-search { position: relative; flex: 1; min-width: 220px; }
+    .filter-search__icon { position: absolute; left: var(--space-3); top: 50%; transform: translateY(-50%); color: var(--text-placeholder); pointer-events: none; width: 16px; height: 16px; }
+    .filter-search__input {
+      width: 100%; height: 2.25rem;
+      padding-inline: var(--space-8) var(--space-8);
+      font-size: var(--text-sm); font-family: var(--font-sans);
+      color: var(--text-primary); background-color: var(--bg-sunken);
+      border: 1.5px solid var(--border-medium); border-radius: var(--radius-md);
+      outline: none; transition: border-color 0.15s, box-shadow 0.15s;
+    }
+    .filter-search__input::placeholder { color: var(--text-placeholder); }
+    .filter-search__input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-subtle); }
+    .filter-search__clear {
+      position: absolute; right: var(--space-2); top: 50%; transform: translateY(-50%);
+      background: none; border: none; padding: 2px; cursor: pointer;
+      color: var(--text-secondary); border-radius: var(--radius-sm);
+      display: flex; align-items: center; opacity: 0; transition: opacity 0.1s;
+    }
+    .filter-search__clear.is-visible { opacity: 1; }
+
+    .filter-groups { display: flex; align-items: center; gap: var(--space-4); flex-wrap: wrap; }
+    .filter-group { display: flex; align-items: center; gap: var(--space-2); }
+    fieldset.filter-group { border: none; padding: 0; margin: 0; min-inline-size: 0; }
+    .filter-group__label { font-size: var(--text-xs); font-weight: var(--weight-semibold); color: var(--text-secondary); white-space: nowrap; }
+
+    .filter-select {
+      height: 2.25rem; min-width: 8.5rem;
+      padding-block: 0; padding-inline: var(--space-3) calc(var(--space-3) + 1.25rem);
+      font-size: var(--text-sm); font-family: var(--font-sans);
+      color: var(--text-primary); background-color: var(--bg-sunken);
+      border: 1.5px solid var(--border-medium); border-radius: var(--radius-md);
+      outline: none; appearance: none; -webkit-appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1.5L6 6.5L11 1.5' stroke='%238892a4' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat; background-position: right var(--space-3) center; background-size: 12px 8px;
+      cursor: pointer; transition: border-color 0.15s, box-shadow 0.15s; white-space: nowrap;
+    }
+    .filter-select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-subtle); }
+
+    .filter-bar__count { font-size: var(--text-sm); color: var(--text-secondary); white-space: nowrap; }
+    .filter-bar__count strong { color: var(--text-primary); font-weight: var(--weight-semibold); }
+
+    .filter-pills { display: flex; align-items: center; gap: var(--space-2); flex-wrap: wrap; }
+
+    /* ── DICTATION GRID ─────────────────────────────────── */
+    .dictation-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--space-4);
+    }
+    @media (max-width: 900px) { .dictation-grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 580px) { .dictation-grid { grid-template-columns: 1fr; } }
+
+    /* ── DICTATION CARD ─────────────────────────────────── */
+    .dict-card {
+      background-color: var(--bg-surface);
+      border: 1px solid var(--border-soft);
+      border-radius: var(--radius-xl);
+      padding: var(--space-5);
+      display: flex; flex-direction: column; gap: var(--space-3);
+      cursor: pointer; text-decoration: none; color: inherit;
+      transition: border-color 0.15s, box-shadow 0.15s, transform 0.12s;
+      position: relative; overflow: hidden;
+    }
+    .dict-card:hover {
+      border-color: var(--border-medium); box-shadow: var(--shadow-md);
+      transform: translateY(-2px);
+    }
+    .dict-card:active { transform: translateY(0); box-shadow: var(--shadow-sm); }
+
+    /* Status left border */
+    .dict-card::before {
+      content: ''; position: absolute; top: 0; left: 0; bottom: 0;
+      width: 3px; background-color: var(--border-soft);
+      border-radius: var(--radius-xl) 0 0 var(--radius-xl);
+    }
+    .dict-card[data-status="in-progress"]::before { background-color: var(--warning); }
+    .dict-card[data-status="done"]::before { background-color: var(--success); }
+
+    .dict-card__header { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--space-2); }
+    .dict-card__badges { display: flex; align-items: center; gap: var(--space-2); flex-wrap: wrap; }
+
+    .dict-card__lang {
+      font-size: 10px; font-weight: var(--weight-bold); text-transform: uppercase;
+      letter-spacing: 0.06em; color: var(--text-secondary);
+      background-color: var(--bg-sunken); border: 1px solid var(--border-soft);
+      border-radius: var(--radius-sm); padding: 2px var(--space-2); white-space: nowrap;
+    }
+    .dict-card__status {
+      font-size: 10px; font-weight: var(--weight-semibold); letter-spacing: 0.04em;
+      padding: 2px var(--space-2); border-radius: var(--radius-full); white-space: nowrap;
+    }
+    .dict-card__status--pending { color: var(--text-secondary); background-color: var(--bg-sunken); }
+    .dict-card__status--progress { color: var(--warning); background-color: oklch(from var(--warning) l c h / 0.1); }
+    .dict-card__status--done { color: var(--success); background-color: oklch(from var(--success) l c h / 0.1); }
+
+    .dict-card__title {
+      font-size: var(--text-md); font-weight: var(--weight-semibold);
+      color: var(--text-primary); line-height: var(--leading-tight); margin: 0;
+      display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+    }
+    .dict-card__tags { display: flex; flex-wrap: wrap; gap: var(--space-1); min-height: 1.4rem; }
+    .dict-card__tag {
+      font-size: 11px; color: var(--text-secondary); background-color: var(--bg-sunken);
+      border: 1px solid var(--border-soft); border-radius: var(--radius-full);
+      padding: 2px var(--space-2); white-space: nowrap;
+    }
+    .dict-card__meta { display: flex; align-items: center; gap: var(--space-3); font-size: var(--text-xs); color: var(--text-secondary); }
+    .dict-card__meta-item { display: flex; align-items: center; gap: var(--space-1); }
+    .dict-card__meta-item svg { width: 12px; height: 12px; flex-shrink: 0; }
+
+    /* Score strip */
+    .dict-card__score { display: flex; align-items: center; gap: var(--space-3); }
+    .dict-card__score-bar { flex: 1; height: 4px; background-color: var(--bg-sunken); border-radius: var(--radius-full); overflow: hidden; }
+    .dict-card__score-fill { height: 100%; border-radius: var(--radius-full); background-color: var(--text-secondary); }
+    .dict-card__score-pct { font-size: var(--text-xs); font-weight: var(--weight-semibold); font-feature-settings: "tnum"; white-space: nowrap; min-width: 2.5rem; text-align: right; }
+    .dict-card[data-score-ok]   .dict-card__score-fill { background-color: var(--success); }
+    .dict-card[data-score-ok]   .dict-card__score-pct  { color: var(--success); }
+    .dict-card[data-score-warn] .dict-card__score-fill { background-color: var(--warning); }
+    .dict-card[data-score-warn] .dict-card__score-pct  { color: var(--warning); }
+    .dict-card[data-score-poor] .dict-card__score-fill { background-color: var(--error); }
+    .dict-card[data-score-poor] .dict-card__score-pct  { color: var(--error); }
+
+    /* Footer */
+    .dict-card__footer {
+      display: flex; align-items: center; justify-content: space-between;
+      gap: var(--space-2); margin-top: auto; padding-top: var(--space-2);
+      border-top: 1px solid var(--border-soft);
+    }
+    .dict-card__source { font-size: 11px; color: var(--text-placeholder); display: flex; align-items: center; gap: var(--space-1); overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+    .dict-card__source svg { width: 11px; height: 11px; flex-shrink: 0; }
+    .dict-card__date { font-size: 11px; color: var(--text-placeholder); white-space: nowrap; }
+
+    /* Hover play button */
+    .dict-card__play {
+      position: absolute; bottom: var(--space-4); right: var(--space-4);
+      width: 2.25rem; height: 2.25rem; border-radius: 50%;
+      background-color: var(--accent); color: var(--text-on-accent);
+      border: none; display: flex; align-items: center; justify-content: center;
+      cursor: pointer; opacity: 0; transform: scale(0.85);
+      transition: opacity 0.15s, transform 0.15s; text-decoration: none; flex-shrink: 0;
+    }
+    .dict-card:hover .dict-card__play { opacity: 1; transform: scale(1); }
+    .dict-card__play svg { width: 16px; height: 16px; }
+
+    /* ── PAGINATION ─────────────────────────────────────── */
+    .list-pagination { display: flex; align-items: center; justify-content: center; gap: var(--space-2); padding-block: var(--space-4); }
+    .list-pagination__btn {
+      width: 2rem; height: 2rem; border-radius: var(--radius-md);
+      border: 1px solid var(--border-medium); background-color: var(--bg-surface);
+      color: var(--text-primary); font-size: var(--text-sm); font-weight: var(--weight-medium);
+      cursor: pointer; display: flex; align-items: center; justify-content: center;
+      transition: background-color 0.1s, border-color 0.1s; text-decoration: none;
+    }
+    .list-pagination__btn:hover { background-color: var(--bg-sunken); }
+    .list-pagination__btn.is-active { background-color: var(--accent); border-color: var(--accent); color: var(--text-on-accent); }
+    .list-pagination__btn:disabled { opacity: 0.4; cursor: not-allowed; }
+    .list-pagination__sep { color: var(--text-placeholder); font-size: var(--text-sm); user-select: none; }
+    .list-pagination__arrow { width: auto; padding-inline: var(--space-3); gap: var(--space-1); font-size: var(--text-xs); }
+    .list-pagination__arrow svg { width: 14px; height: 14px; }
+
+    /* ── SECTION TITLE ──────────────────────────────────── */
+    .section-label {
+      font-size: var(--text-xs); font-weight: var(--weight-semibold);
+      color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.06em;
+      display: flex; align-items: center; gap: var(--space-2);
+    }
+    .section-label__count {
+      background-color: var(--bg-sunken); color: var(--text-secondary);
+      border: 1px solid var(--border-soft); border-radius: var(--radius-full);
+      padding: 1px var(--space-2); font-size: 10px;
+    }
+
+    /* ── TWEAKS PANEL ───────────────────────────────────── */
+    #tweaks-panel {
+      position: fixed; bottom: var(--space-6); right: var(--space-6); z-index: 100;
+      background-color: var(--bg-elevated); border: 1px solid var(--border-medium);
+      border-radius: var(--radius-xl); padding: var(--space-5);
+      box-shadow: var(--shadow-lg); width: 260px;
+      display: none; flex-direction: column; gap: var(--space-4);
+    }
+    #tweaks-panel.is-open { display: flex; }
+    .tweaks-header { display: flex; align-items: center; justify-content: space-between; }
+    .tweaks-title { font-size: var(--text-sm); font-weight: var(--weight-semibold); color: var(--text-primary); }
+    .tweaks-close { width: 1.5rem; height: 1.5rem; border-radius: var(--radius-sm); color: var(--text-secondary); }
+    .tweaks-close:hover { background-color: var(--bg-sunken); color: var(--text-primary); }
+    .tweak-row { display: flex; flex-direction: column; gap: var(--space-2); }
+    .tweak-label { font-size: var(--text-xs); font-weight: var(--weight-semibold); color: var(--text-secondary); }
+    .tweak-options { display: flex; gap: var(--space-2); flex-wrap: wrap; }
+    .tweak-btn {
+      font-size: var(--text-xs); padding: var(--space-1) var(--space-3);
+      border: 1px solid var(--border-medium); border-radius: var(--radius-full);
+      background: var(--bg-sunken); color: var(--text-secondary); cursor: pointer;
+      transition: all 0.1s;
+    }
+    .tweak-btn.is-active { background: var(--accent-subtle); border-color: var(--accent); color: var(--accent-text); }
+    .tweak-sep { height: 1px; background-color: var(--border-soft); }
+  </style>
+</head>
+<body>
+<div class="list-layout">
+
+  <!-- STATE NAV (dev) -->
+  <nav class="state-nav" aria-label="Page states">
+    <span class="state-nav__label">States:</span>
+    <a href="Dictation List.html" class="state-nav__link is-current" aria-current="page">① Populated</a>
+    <span class="state-nav__sep"></span>
+    <a href="Player Page.html" class="state-nav__link state-nav__link--ext">Player ↗</a>
+    <a href="Analytics Page.html" class="state-nav__link state-nav__link--ext">Analytics ↗</a>
+    <a href="Settings Page.html" class="state-nav__link state-nav__link--ext">Settings ↗</a>
+  </nav>
+
+  <!-- TOPBAR -->
+  <header class="app-topbar">
+    <div class="app-topbar__inner">
+      <a href="#" class="app-topbar__logo">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" x2="12" y1="19" y2="22"/></svg>
+        Dictify
+      </a>
+      <nav class="app-topbar__nav" aria-label="Main navigation">
+        <a href="Dictation List.html" class="app-topbar__link is-active" aria-current="page">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18M7 12h10M11 18h4"/></svg>
+          Dictations
+        </a>
+        <a href="Analytics Page.html" class="app-topbar__link">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" x2="18" y1="20" y2="10"/><line x1="12" x2="12" y1="20" y2="4"/><line x1="6" x2="6" y1="20" y2="14"/></svg>
+          Analytics
+        </a>
+        <a href="#" class="app-topbar__link">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22v-5"/><path d="M9 8V2"/><path d="M15 8V2"/><path d="M18 8H6a2 2 0 0 0-2 2v4a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-4a2 2 0 0 0-2-2Z"/></svg>
+          Connections
+        </a>
+        <a href="Settings Page.html" class="app-topbar__link">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
+          Settings
+        </a>
+      </nav>
+      <div class="app-topbar__actions">
+        <button type="button" class="btn btn--sm btn--primary" id="add-btn">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="12" x2="12" y1="5" y2="19"/><line x1="5" x2="19" y1="12" y2="12"/></svg>
+          Add dictation
+        </button>
+        <button type="button" class="btn btn--sm btn--ghost btn--icon" id="theme-toggle" aria-label="Toggle theme">
+          <svg class="icon-light" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
+          <svg class="icon-dark" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN -->
+  <main class="page-main" id="main-content">
+
+    <!-- Page heading -->
+    <div class="list-heading">
+      <h1 class="list-heading__title">My Dictations</h1>
+      <p class="list-heading__sub">Practice makes perfect. Choose a dictation to begin.</p>
+    </div>
+
+    <!-- FILTER BAR -->
+    <div class="filter-bar" role="search" aria-label="Filter dictations">
+      <div class="filter-bar__top">
+        <!-- Search -->
+        <div class="filter-search">
+          <svg class="filter-search__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+          <input type="search" class="filter-search__input" id="search-input" placeholder="Search by title or topic…" aria-label="Search dictations" />
+          <button type="button" class="filter-search__clear" id="search-clear" aria-label="Clear search">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" x2="6" y1="6" y2="18"/><line x1="6" x2="18" y1="6" y2="18"/></svg>
+          </button>
+        </div>
+        <!-- Selects -->
+        <div class="filter-groups">
+          <div class="filter-group">
+            <label for="filter-lang" class="filter-group__label">Language</label>
+            <select id="filter-lang" class="filter-select">
+              <option value="all">All languages</option>
+              <option value="en">English</option>
+              <option value="fr">French</option>
+              <option value="de">German</option>
+              <option value="es">Spanish</option>
+              <option value="it">Italian</option>
+            </select>
+          </div>
+          <div class="filter-group">
+            <label for="filter-status" class="filter-group__label">Status</label>
+            <select id="filter-status" class="filter-select">
+              <option value="all">All statuses</option>
+              <option value="not-started">Not started</option>
+              <option value="in-progress">In progress</option>
+              <option value="done">Completed</option>
+            </select>
+          </div>
+          <div class="filter-group">
+            <label for="filter-sort" class="filter-group__label">Sort</label>
+            <select id="filter-sort" class="filter-select">
+              <option value="newest">Newest first</option>
+              <option value="oldest">Oldest first</option>
+              <option value="level">By level</option>
+              <option value="score">By score</option>
+              <option value="az">A → Z</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="filter-bar__bottom">
+        <!-- CEFR pills -->
+        <fieldset class="filter-group" aria-label="Filter by CEFR level">
+          <legend class="filter-group__label">Level</legend>
+          <div class="filter-pills" id="level-pills" role="group">
+            <button class="pill is-active" data-level="all" aria-pressed="true">All</button>
+            <button class="pill" data-level="A1" aria-pressed="false">A1</button>
+            <button class="pill" data-level="A2" aria-pressed="false">A2</button>
+            <button class="pill" data-level="B1" aria-pressed="false">B1</button>
+            <button class="pill" data-level="B2" aria-pressed="false">B2</button>
+            <button class="pill" data-level="C1" aria-pressed="false">C1</button>
+            <button class="pill" data-level="C2" aria-pressed="false">C2</button>
+          </div>
+        </fieldset>
+        <p class="filter-bar__count" id="result-count"><strong>9</strong> dictations</p>
+      </div>
+    </div>
+
+    <!-- DICTATION GRID -->
+    <div class="dictation-grid" id="dictation-grid" aria-label="Dictation list">
+
+      <!-- Card 1 — done, score ok -->
+      <a href="Player Page.html" class="dict-card" data-status="done" data-score-ok
+         data-level="B1" data-lang="en" data-title="The History of Music">
+        <div class="dict-card__header">
+          <div class="dict-card__badges">
+            <span class="dict-card__lang">EN</span>
+            <span class="badge" data-level="B1">B1</span>
+            <span class="dict-card__status dict-card__status--done">Completed</span>
+          </div>
+        </div>
+        <h2 class="dict-card__title">The History of Music</h2>
+        <div class="dict-card__tags">
+          <span class="dict-card__tag">History</span>
+          <span class="dict-card__tag">Culture</span>
+          <span class="dict-card__tag">Arts</span>
+        </div>
+        <div class="dict-card__meta">
+          <span class="dict-card__meta-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" x2="8" y1="13" y2="13"/><line x1="16" x2="8" y1="17" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+            23 sentences
+          </span>
+          <span class="dict-card__meta-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            ~8 min
+          </span>
+        </div>
+        <div class="dict-card__score">
+          <div class="dict-card__score-bar"><div class="dict-card__score-fill" style="width: 94%"></div></div>
+          <span class="dict-card__score-pct">94%</span>
+        </div>
+        <div class="dict-card__footer">
+          <span class="dict-card__source">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+            dictify-en-b1
+          </span>
+          <span class="dict-card__date">Apr 15, 2026</span>
+        </div>
+        <a href="Player Page.html" class="dict-card__play" tabindex="-1" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+        </a>
+      </a>
+
+      <!-- Card 2 — done, score warn -->
+      <a href="Player Page.html" class="dict-card" data-status="done" data-score-warn
+         data-level="B2" data-lang="fr" data-title="La Révolution Française">
+        <div class="dict-card__header">
+          <div class="dict-card__badges">
+            <span class="dict-card__lang">FR</span>
+            <span class="badge" data-level="B2">B2</span>
+            <span class="dict-card__status dict-card__status--done">Completed</span>
+          </div>
+        </div>
+        <h2 class="dict-card__title">La Révolution Française</h2>
+        <div class="dict-card__tags">
+          <span class="dict-card__tag">History</span>
+          <span class="dict-card__tag">Politics</span>
+        </div>
+        <div class="dict-card__meta">
+          <span class="dict-card__meta-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" x2="8" y1="13" y2="13"/><line x1="16" x2="8" y1="17" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+            18 sentences
+          </span>
+          <span class="dict-card__meta-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            ~6 min
+          </span>
+        </div>
+        <div class="dict-card__score">
+          <div class="dict-card__score-bar"><div class="dict-card__score-fill" style="width: 71%"></div></div>
+          <span class="dict-card__score-pct">71%</span>
+        </div>
+        <div class="dict-card__footer">
+          <span class="dict-card__source">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+            dictify-fr-b2
+          </span>
+          <span class="dict-card__date">Apr 14, 2026</span>
+        </div>
+        <a href="Player Page.html" class="dict-card__play" tabindex="-1" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+        </a>
+      </a>
+
+      <!-- Card 3 — in-progress -->
+      <a href="Player Page.html" class="dict-card" data-status="in-progress"
+         data-level="A2" data-lang="de" data-title="Daily Life in Berlin">
+        <div class="dict-card__header">
+          <div class="dict-card__badges">
+            <span class="dict-card__lang">DE</span>
+            <span class="badge" data-level="A2">A2</span>
+            <span class="dict-card__status dict-card__status--progress">In progress</span>
+          </div>
+        </div>
+        <h2 class="dict-card__title">Daily Life in Berlin</h2>
+        <div class="dict-card__tags">
+          <span class="dict-card__tag">Everyday life</span>
+          <span class="dict-card__tag">City</span>
+        </div>
+        <div class="dict-card__meta">
+          <span class="dict-card__meta-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" x2="8" y1="13" y2="13"/><line x1="16" x2="8" y1="17" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+            14 sentences
+          </span>
+          <span class="dict-card__meta-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            ~5 min
+          </span>
+        </div>
+        <!-- No score — in-progress -->
+        <div class="dict-card__footer">
+          <span class="dict-card__source">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+            dictify-de-a2
+          </span>
+          <span class="dict-card__date">Apr 13, 2026</span>
+        </div>
+        <a href="Player Page.html" class="dict-card__play" tabindex="-1" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+        </a>
+      </a>
+
+      <!-- Card 4 — done, score poor -->
+      <a href="Player Page.html" class="dict-card" data-status="done" data-score-poor
+         data-level="C1" data-lang="en" data-title="Climate Change and the Arctic">
+        <div class="dict-card__header">
+          <div class="dict-card__badges">
+            <span class="dict-card__lang">EN</span>
+            <span class="badge" data-level="C1">C1</span>
+            <span class="dict-card__status dict-card__status--done">Completed</span>
+          </div>
+        </div>
+        <h2 class="dict-card__title">Climate Change and the Arctic</h2>
+        <div class="dict-card__tags">
+          <span class="dict-card__tag">Science</span>
+          <span class="dict-card__tag">Environment</span>
+        </div>
+        <div class="dict-card__meta">
+          <span class="dict-card__meta-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" x2="8" y1="13" y2="13"/><line x1="16" x2="8" y1="17" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+            31 sentences
+          </span>
+          <span class="dict-card__meta-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            ~11 min
+          </span>
+        </div>
+        <div class="dict-card__score">
+          <div class="dict-card__score-bar"><div class="dict-card__score-fill" style="width: 52%"></div></div>
+          <span class="dict-card__score-pct">52%</span>
+        </div>
+        <div class="dict-card__footer">
+          <span class="dict-card__source">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+            dictify-en-c1
+          </span>
+          <span class="dict-card__date">Apr 12, 2026</span>
+        </div>
+        <a href="Player Page.html" class="dict-card__play" tabindex="-1" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+        </a>
+      </a>
+
+      <!-- Card 5 — not started -->
+      <a href="Player Page.html" class="dict-card" data-status="not-started"
+         data-level="B1" data-lang="fr" data-title="Les Grandes Inventions">
+        <div class="dict-card__header">
+          <div class="dict-card__badges">
+            <span class="dict-card__lang">FR</span>
+            <span class="badge" data-level="B1">B1</span>
+            <span class="dict-card__status dict-card__status--pending">Not started</span>
+          </div>
+        </div>
+        <h2 class="dict-card__title">Les Grandes Inventions</h2>
+        <div class="dict-card__tags">
+          <span class="dict-card__tag">Science</span>
+          <span class="dict-card__tag">Technology</span>
+          <span class="dict-card__tag">History</span>
+        </div>
+        <div class="dict-card__meta">
+          <span class="dict-card__meta-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" x2="8" y1="13" y2="13"/><line x1="16" x2="8" y1="17" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+            20 sentences
+          </span>
+          <span class="dict-card__meta-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            ~7 min
+          </span>
+        </div>
+        <div class="dict-card__footer">
+          <span class="dict-card__source">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+            dictify-fr-b1
+          </span>
+          <span class="dict-card__date">Apr 10, 2026</span>
+        </div>
+        <a href="Player Page.html" class="dict-card__play" tabindex="-1" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+        </a>
+      </a>
+
+      <!-- Card 6 — done, score ok -->
+      <a href="Player Page.html" class="dict-card" data-status="done" data-score-ok
+         data-level="B2" data-lang="en" data-title="Urban Planning in the 21st Century">
+        <div class="dict-card__header">
+          <div class="dict-card__badges">
+            <span class="dict-card__lang">EN</span>
+            <span class="badge" data-level="B2">B2</span>
+            <span class="dict-card__status dict-card__status--done">Completed</span>
+          </div>
+        </div>
+        <h2 class="dict-card__title">Urban Planning in the 21st Century</h2>
+        <div class="dict-card__tags">
+          <span class="dict-card__tag">Society</span>
+          <span class="dict-card__tag">Architecture</span>
+        </div>
+        <div class="dict-card__meta">
+          <span class="dict-card__meta-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" x2="8" y1="13" y2="13"/><line x1="16" x2="8" y1="17" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+            26 sentences
+          </span>
+          <span class="dict-card__meta-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            ~9 min
+          </span>
+        </div>
+        <div class="dict-card__score">
+          <div class="dict-card__score-bar"><div class="dict-card__score-fill" style="width: 89%"></div></div>
+          <span class="dict-card__score-pct">89%</span>
+        </div>
+        <div class="dict-card__footer">
+          <span class="dict-card__source">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+            dictify-en-b2
+          </span>
+          <span class="dict-card__date">Apr 9, 2026</span>
+        </div>
+        <a href="Player Page.html" class="dict-card__play" tabindex="-1" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+        </a>
+      </a>
+
+      <!-- Card 7 — in-progress -->
+      <a href="Player Page.html" class="dict-card" data-status="in-progress"
+         data-level="B2" data-lang="de" data-title="Das Wirtschaftswunder">
+        <div class="dict-card__header">
+          <div class="dict-card__badges">
+            <span class="dict-card__lang">DE</span>
+            <span class="badge" data-level="B2">B2</span>
+            <span class="dict-card__status dict-card__status--progress">In progress</span>
+          </div>
+        </div>
+        <h2 class="dict-card__title">Das Wirtschaftswunder</h2>
+        <div class="dict-card__tags">
+          <span class="dict-card__tag">Economics</span>
+          <span class="dict-card__tag">History</span>
+          <span class="dict-card__tag">Germany</span>
+        </div>
+        <div class="dict-card__meta">
+          <span class="dict-card__meta-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" x2="8" y1="13" y2="13"/><line x1="16" x2="8" y1="17" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+            22 sentences
+          </span>
+          <span class="dict-card__meta-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            ~8 min
+          </span>
+        </div>
+        <div class="dict-card__footer">
+          <span class="dict-card__source">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+            dictify-de-b2
+          </span>
+          <span class="dict-card__date">Apr 7, 2026</span>
+        </div>
+        <a href="Player Page.html" class="dict-card__play" tabindex="-1" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+        </a>
+      </a>
+
+      <!-- Card 8 — not started, C2 -->
+      <a href="Player Page.html" class="dict-card" data-status="not-started"
+         data-level="C2" data-lang="en" data-title="Literature of the Romantic Era">
+        <div class="dict-card__header">
+          <div class="dict-card__badges">
+            <span class="dict-card__lang">EN</span>
+            <span class="badge" data-level="C2">C2</span>
+            <span class="dict-card__status dict-card__status--pending">Not started</span>
+          </div>
+        </div>
+        <h2 class="dict-card__title">Literature of the Romantic Era</h2>
+        <div class="dict-card__tags">
+          <span class="dict-card__tag">Literature</span>
+          <span class="dict-card__tag">Arts</span>
+          <span class="dict-card__tag">History</span>
+        </div>
+        <div class="dict-card__meta">
+          <span class="dict-card__meta-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" x2="8" y1="13" y2="13"/><line x1="16" x2="8" y1="17" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+            35 sentences
+          </span>
+          <span class="dict-card__meta-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            ~13 min
+          </span>
+        </div>
+        <div class="dict-card__footer">
+          <span class="dict-card__source">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+            dictify-en-c2
+          </span>
+          <span class="dict-card__date">Apr 5, 2026</span>
+        </div>
+        <a href="Player Page.html" class="dict-card__play" tabindex="-1" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+        </a>
+      </a>
+
+      <!-- Card 9 — not started, A1 -->
+      <a href="Player Page.html" class="dict-card" data-status="not-started"
+         data-level="A1" data-lang="es" data-title="Everyday Spanish Conversations">
+        <div class="dict-card__header">
+          <div class="dict-card__badges">
+            <span class="dict-card__lang">ES</span>
+            <span class="badge" data-level="A1">A1</span>
+            <span class="dict-card__status dict-card__status--pending">Not started</span>
+          </div>
+        </div>
+        <h2 class="dict-card__title">Everyday Spanish Conversations</h2>
+        <div class="dict-card__tags">
+          <span class="dict-card__tag">Everyday life</span>
+          <span class="dict-card__tag">Dialogue</span>
+        </div>
+        <div class="dict-card__meta">
+          <span class="dict-card__meta-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" x2="8" y1="13" y2="13"/><line x1="16" x2="8" y1="17" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+            12 sentences
+          </span>
+          <span class="dict-card__meta-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            ~4 min
+          </span>
+        </div>
+        <div class="dict-card__footer">
+          <span class="dict-card__source">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+            dictify-es-a1
+          </span>
+          <span class="dict-card__date">Apr 3, 2026</span>
+        </div>
+        <a href="Player Page.html" class="dict-card__play" tabindex="-1" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+        </a>
+      </a>
+
+    </div><!-- /dictation-grid -->
+
+    <!-- Empty state (hidden by default) -->
+    <div id="no-results" style="display:none; text-align:center; padding: var(--space-16) 0; color: var(--text-secondary);">
+      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="margin: 0 auto var(--space-4); color: var(--text-tertiary)"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/><path d="M8 11h6"/></svg>
+      <p style="font-size: var(--text-md); font-weight: var(--weight-semibold); color: var(--text-primary); margin-bottom: var(--space-1);">No dictations found</p>
+      <p style="font-size: var(--text-sm);">Try adjusting your filters or search query.</p>
+    </div>
+
+    <!-- PAGINATION -->
+    <nav class="list-pagination" aria-label="Pagination" id="pagination">
+      <button class="list-pagination__btn list-pagination__arrow" disabled aria-label="Previous page">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg>
+        Prev
+      </button>
+      <button class="list-pagination__btn is-active" aria-label="Page 1" aria-current="page">1</button>
+      <button class="list-pagination__btn" aria-label="Page 2">2</button>
+      <button class="list-pagination__btn" aria-label="Page 3">3</button>
+      <span class="list-pagination__sep" aria-hidden="true">…</span>
+      <button class="list-pagination__btn" aria-label="Page 8">8</button>
+      <button class="list-pagination__btn list-pagination__arrow" aria-label="Next page">
+        Next
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>
+      </button>
+    </nav>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="app-footer">
+    <div class="app-footer__inner">
+      <span class="app-footer__brand">Dictify</span>
+      <span class="app-footer__copy">&copy; 2026</span>
+    </div>
+  </footer>
+
+</div><!-- /list-layout -->
+
+<!-- TWEAKS PANEL -->
+<div id="tweaks-panel" role="dialog" aria-label="Tweaks" aria-modal="false">
+  <div class="tweaks-header">
+    <span class="tweaks-title">Tweaks</span>
+    <button class="tweaks-close btn btn--ghost btn--icon" id="tweaks-close" aria-label="Close tweaks">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" x2="6" y1="6" y2="18"/><line x1="6" x2="18" y1="6" y2="18"/></svg>
+    </button>
+  </div>
+  <div class="tweak-sep"></div>
+  <div class="tweak-row">
+    <span class="tweak-label">Theme</span>
+    <div class="tweak-options">
+      <button class="tweak-btn is-active" data-tweak-theme="light">Light</button>
+      <button class="tweak-btn" data-tweak-theme="dark">Dark</button>
+    </div>
+  </div>
+  <div class="tweak-row">
+    <span class="tweak-label">Grid density</span>
+    <div class="tweak-options">
+      <button class="tweak-btn" data-tweak-cols="2">2 cols</button>
+      <button class="tweak-btn is-active" data-tweak-cols="3">3 cols</button>
+    </div>
+  </div>
+  <div class="tweak-row">
+    <span class="tweak-label">Font size</span>
+    <div class="tweak-options">
+      <button class="tweak-btn" data-tweak-font="small">S</button>
+      <button class="tweak-btn is-active" data-tweak-font="normal">M</button>
+      <button class="tweak-btn" data-tweak-font="large">L</button>
+      <button class="tweak-btn" data-tweak-font="xl">XL</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
+    "theme": "light",
+    "cols": 3,
+    "fontSize": "normal"
+  }/*EDITMODE-END*/;
+
+  // ── Theme toggle ──────────────────────────────────────
+  const root = document.documentElement;
+  const themeBtn = document.getElementById('theme-toggle');
+  themeBtn.addEventListener('click', () => {
+    root.dataset.theme = root.dataset.theme === 'dark' ? 'light' : 'dark';
+    syncTweakTheme();
+  });
+
+  // ── Search ────────────────────────────────────────────
+  const searchInput = document.getElementById('search-input');
+  const searchClear = document.getElementById('search-clear');
+  searchInput.addEventListener('input', () => {
+    searchClear.classList.toggle('is-visible', searchInput.value.length > 0);
+    applyFilters();
+  });
+  searchClear.addEventListener('click', () => {
+    searchInput.value = '';
+    searchClear.classList.remove('is-visible');
+    applyFilters();
+  });
+
+  // ── Level pills ───────────────────────────────────────
+  const pills = document.querySelectorAll('#level-pills .pill');
+  pills.forEach(pill => {
+    pill.addEventListener('click', () => {
+      pills.forEach(p => { p.classList.remove('is-active'); p.setAttribute('aria-pressed', 'false'); });
+      pill.classList.add('is-active');
+      pill.setAttribute('aria-pressed', 'true');
+      applyFilters();
+    });
+  });
+
+  // ── Selects ───────────────────────────────────────────
+  ['filter-lang', 'filter-status', 'filter-sort'].forEach(id => {
+    document.getElementById(id).addEventListener('change', applyFilters);
+  });
+
+  // ── Filter logic ──────────────────────────────────────
+  function applyFilters() {
+    const query   = searchInput.value.toLowerCase().trim();
+    const lang    = document.getElementById('filter-lang').value;
+    const status  = document.getElementById('filter-status').value;
+    const sort    = document.getElementById('filter-sort').value;
+    const level   = document.querySelector('#level-pills .pill.is-active').dataset.level;
+
+    const cards = Array.from(document.querySelectorAll('.dict-card'));
+
+    const levelOrder = { A1:1, A2:2, B1:3, B2:4, C1:5, C2:6 };
+
+    // Sort
+    const sorted = [...cards].sort((a, b) => {
+      if (sort === 'newest') return 0; // original order
+      if (sort === 'oldest') return 0;
+      if (sort === 'level') return (levelOrder[a.dataset.level] || 0) - (levelOrder[b.dataset.level] || 0);
+      if (sort === 'az') return (a.dataset.title || '').localeCompare(b.dataset.title || '');
+      if (sort === 'score') {
+        const sa = parseFloat(a.querySelector('.dict-card__score-pct')?.textContent) || 0;
+        const sb = parseFloat(b.querySelector('.dict-card__score-pct')?.textContent) || 0;
+        return sb - sa;
+      }
+      return 0;
+    });
+
+    const grid = document.getElementById('dictation-grid');
+    sorted.forEach(c => grid.appendChild(c));
+
+    let visible = 0;
+    cards.forEach(card => {
+      const matchQuery  = !query || card.dataset.title.toLowerCase().includes(query);
+      const matchLang   = lang === 'all'   || card.dataset.lang === lang;
+      const matchStatus = status === 'all' || card.dataset.status === status;
+      const matchLevel  = level === 'all'  || card.dataset.level === level;
+      const show = matchQuery && matchLang && matchStatus && matchLevel;
+      card.style.display = show ? '' : 'none';
+      if (show) visible++;
+    });
+
+    const countEl = document.getElementById('result-count');
+    countEl.innerHTML = `<strong>${visible}</strong> dictation${visible !== 1 ? 's' : ''}`;
+
+    const noResults = document.getElementById('no-results');
+    const pagination = document.getElementById('pagination');
+    noResults.style.display = visible === 0 ? 'block' : 'none';
+    pagination.style.display = visible === 0 ? 'none' : 'flex';
+  }
+
+  // ── Tweaks panel ──────────────────────────────────────
+  const tweaksPanel = document.getElementById('tweaks-panel');
+
+  window.addEventListener('message', e => {
+    if (e.data?.type === '__activate_edit_mode')   { tweaksPanel.classList.add('is-open'); }
+    if (e.data?.type === '__deactivate_edit_mode') { tweaksPanel.classList.remove('is-open'); }
+  });
+  window.parent.postMessage({ type: '__edit_mode_available' }, '*');
+
+  document.getElementById('tweaks-close').addEventListener('click', () => {
+    tweaksPanel.classList.remove('is-open');
+    window.parent.postMessage({ type: '__edit_mode_dismissed' }, '*');
+  });
+
+  // Theme tweak
+  document.querySelectorAll('[data-tweak-theme]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const t = btn.dataset.tweakTheme;
+      root.dataset.theme = t;
+      setTweakActive('[data-tweak-theme]', btn);
+      window.parent.postMessage({ type: '__edit_mode_set_keys', edits: { theme: t } }, '*');
+    });
+  });
+  function syncTweakTheme() {
+    const active = document.querySelector(`[data-tweak-theme="${root.dataset.theme}"]`);
+    if (active) setTweakActive('[data-tweak-theme]', active);
+  }
+
+  // Cols tweak
+  document.querySelectorAll('[data-tweak-cols]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const c = parseInt(btn.dataset.tweakCols);
+      document.getElementById('dictation-grid').style.gridTemplateColumns = `repeat(${c}, 1fr)`;
+      setTweakActive('[data-tweak-cols]', btn);
+      window.parent.postMessage({ type: '__edit_mode_set_keys', edits: { cols: c } }, '*');
+    });
+  });
+
+  // Font size tweak
+  document.querySelectorAll('[data-tweak-font]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const f = btn.dataset.tweakFont;
+      root.dataset.fontSize = f;
+      setTweakActive('[data-tweak-font]', btn);
+      window.parent.postMessage({ type: '__edit_mode_set_keys', edits: { fontSize: f } }, '*');
+    });
+  });
+
+  function setTweakActive(selector, activeBtn) {
+    document.querySelectorAll(selector).forEach(b => b.classList.remove('is-active'));
+    activeBtn.classList.add('is-active');
+  }
+
+  // Apply saved defaults
+  root.dataset.theme = TWEAK_DEFAULTS.theme || 'light';
+  root.dataset.fontSize = TWEAK_DEFAULTS.fontSize || 'normal';
+  if (TWEAK_DEFAULTS.cols && TWEAK_DEFAULTS.cols !== 3) {
+    document.getElementById('dictation-grid').style.gridTemplateColumns = `repeat(${TWEAK_DEFAULTS.cols}, 1fr)`;
+  }
+</script>
+</body>
+</html>

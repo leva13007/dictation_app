@@ -1,0 +1,1097 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Dictify — Player</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=DM+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Outfit:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+:root {
+  --font-sans: 'Plus Jakarta Sans', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+  --hue: 270;
+  --accent:        oklch(60% 0.22 var(--hue));
+  --accent-hover:  oklch(55% 0.22 var(--hue));
+  --accent-subtle: oklch(96% 0.06 var(--hue));
+  --accent-text:   oklch(48% 0.22 var(--hue));
+  --success:       oklch(55% 0.18 142);
+  --success-sub:   oklch(96% 0.06 142);
+  --error:         oklch(57% 0.20 25);
+  --error-sub:     oklch(96% 0.07 25);
+  --warning:       oklch(68% 0.16 75);
+  --warning-sub:   oklch(95% 0.07 75);
+}
+[data-theme="light"] {
+  --bg:         oklch(98.5% 0.003 var(--hue));
+  --surface:    oklch(100% 0 0);
+  --sunken:     oklch(96% 0.005 var(--hue));
+  --interactive:oklch(94% 0.006 var(--hue));
+  --text:       oklch(11% 0.01 var(--hue));
+  --text2:      oklch(44% 0.009 var(--hue));
+  --text3:      oklch(64% 0.006 var(--hue));
+  --border:     oklch(90% 0.007 var(--hue));
+  --border2:    oklch(83% 0.009 var(--hue));
+  --on-accent:  oklch(100% 0 0);
+  --shadow-sm:  0 1px 2px oklch(0% 0 0 / .05);
+  --shadow-md:  0 4px 14px oklch(0% 0 0 / .07);
+  --shadow-lg:  0 8px 28px oklch(0% 0 0 / .10);
+}
+[data-theme="dark"] {
+  --bg:         oklch(17% 0.012 var(--hue));
+  --surface:    oklch(21% 0.013 var(--hue));
+  --sunken:     oklch(14% 0.009 var(--hue));
+  --interactive:oklch(25% 0.013 var(--hue));
+  --text:       oklch(95% 0.003 var(--hue));
+  --text2:      oklch(67% 0.007 var(--hue));
+  --text3:      oklch(48% 0.006 var(--hue));
+  --border:     oklch(27% 0.013 var(--hue));
+  --border2:    oklch(34% 0.013 var(--hue));
+  --on-accent:  oklch(100% 0 0);
+  --accent:        oklch(68% 0.22 var(--hue));
+  --accent-hover:  oklch(73% 0.22 var(--hue));
+  --accent-subtle: oklch(18% 0.08 var(--hue));
+  --accent-text:   oklch(72% 0.22 var(--hue));
+  --shadow-sm:  0 1px 3px oklch(0% 0 0 / .3);
+  --shadow-md:  0 4px 14px oklch(0% 0 0 / .38);
+  --shadow-lg:  0 8px 28px oklch(0% 0 0 / .45);
+}
+
+html { color-scheme: light dark; }
+body {
+  font-family: var(--font-sans);
+  background: var(--bg);
+  color: var(--text);
+  font-size: 15px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  transition: background .2s, color .2s;
+}
+button { font-family: inherit; cursor: pointer; border: none; background: none; }
+textarea,input { font-family: inherit; }
+a { color: inherit; text-decoration: none; }
+
+/* ─── STATE NAV (dev) ─────────────────────────────── */
+.sn {
+  display:flex; align-items:center; gap:3px;
+  padding:7px 16px;
+  background: oklch(17% 0.018 var(--hue));
+  font-size:11px; overflow-x:auto; flex-shrink:0;
+}
+.sn-lbl { color:oklch(48% 0.01 var(--hue)); font-weight:600; margin-right:4px; white-space:nowrap; }
+.sn-sep { width:1px; height:14px; background:oklch(28% 0.015 var(--hue)); margin:0 3px; flex-shrink:0; }
+.sn-btn {
+  padding:3px 10px; border-radius:5px; font-size:11px; font-weight:600;
+  color:oklch(62% 0.01 var(--hue)); background:none; border:none;
+  cursor:pointer; font-family:inherit; transition:all .15s; white-space:nowrap;
+}
+.sn-btn:hover { color:#fff; background:oklch(26% 0.018 var(--hue)); }
+.sn-btn.on { color:#fff; background:var(--accent); }
+
+/* ─── SHARED NAV (identical to Landing Page) ─────── */
+.nav {
+  position:sticky; top:0; z-index:40;
+  background:color-mix(in oklch, var(--surface) 80%, transparent);
+  border-bottom:1px solid var(--border);
+  backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px);
+}
+.nav-in {
+  max-width:1100px; margin:0 auto; padding:0 24px;
+  height:56px; display:flex; align-items:center; gap:16px;
+}
+.logo {
+  display:flex; align-items:center; gap:8px;
+  font-weight:800; font-size:16px; letter-spacing:-.03em; flex-shrink:0;
+  color:var(--text); text-decoration:none;
+}
+.logo-dot {
+  width:9px; height:9px; border-radius:50%;
+  background:var(--accent);
+  box-shadow:0 0 10px oklch(from var(--accent) l c h / .55); flex-shrink:0;
+}
+.nav-links { display:flex; gap:2px; flex:1; }
+.nav-link {
+  font-size:13px; color:var(--text2); padding:6px 12px;
+  border-radius:8px; font-weight:500; transition:all .15s;
+  display:flex; align-items:center; gap:5px;
+}
+.nav-link:hover { color:var(--text); background:var(--sunken); }
+.nav-link.on { color:var(--text); background:var(--sunken); }
+.nav-actions { margin-left:auto; display:flex; gap:8px; align-items:center; }
+
+/* ─── ICON BUTTON ─────────────────────────────────── */
+.ibtn {
+  width:34px; height:34px; border-radius:8px;
+  display:inline-flex; align-items:center; justify-content:center;
+  color:var(--text2); transition:all .15s; cursor:pointer;
+}
+.ibtn:hover { color:var(--text); background:var(--sunken); }
+.ibtn.on { color:var(--accent-text); background:var(--accent-subtle); }
+
+/* ─── CONTEXT BAR (player-specific, below shared nav) */
+.ctx-bar {
+  position:sticky; top:56px; z-index:30;
+  background:color-mix(in oklch, var(--surface) 88%, transparent);
+  border-bottom:1px solid var(--border);
+  backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px);
+}
+.ctx-bar-row {
+  max-width:1100px; margin:0 auto; padding:0 24px;
+  height:50px; display:flex; align-items:center; gap:12px;
+}
+.ph-info { flex:1; min-width:0; }
+.ph-title {
+  font-size:14px; font-weight:700; letter-spacing:-.02em;
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+}
+.ph-meta { display:flex; align-items:center; gap:8px; margin-top:2px; }
+.ph-actions { display:flex; align-items:center; gap:6px; flex-shrink:0; }
+.counter {
+  font-size:11.5px; color:var(--text2); font-family:var(--font-mono);
+  font-weight:500; letter-spacing:.02em;
+}
+.lvl-badge {
+  display:inline-flex; align-items:center;
+  padding:2px 7px; border-radius:4px;
+  font-size:10.5px; font-weight:700;
+  letter-spacing:.05em; font-family:var(--font-mono);
+  background:oklch(91% 0.07 230); color:oklch(33% 0.16 230);
+}
+/* overall progress strip */
+.prog-strip { height:2px; background:var(--sunken); }
+.prog-fill {
+  height:100%; background:var(--accent);
+  transition:width .6s cubic-bezier(.4,0,.2,1);
+}
+
+/* ─── MAIN ────────────────────────────────────────── */
+.pmain {
+  flex:1; max-width:1100px; margin:0 auto; width:100%;
+  padding:32px 24px calc(88px + 40px);
+  display:flex; flex-direction:column; align-items:center; gap:16px;
+}
+.pmain > * { width:100%; max-width:720px; }
+
+/* ─── HINT PANEL ──────────────────────────────────── */
+.hint-panel {
+  border-radius:11px; overflow:hidden;
+  border:1px solid oklch(from var(--accent) l c h / .22);
+  background:var(--accent-subtle);
+  animation:sd .2s cubic-bezier(.4,0,.2,1);
+}
+@keyframes sd {
+  from{opacity:0;transform:translateY(-10px)}
+  to{opacity:1;transform:translateY(0)}
+}
+.hint-hdr {
+  display:flex; align-items:center; justify-content:space-between;
+  padding:10px 14px;
+}
+.hint-label {
+  font-size:10.5px; font-weight:700; color:var(--accent-text);
+  text-transform:uppercase; letter-spacing:.08em;
+  display:flex; align-items:center; gap:6px;
+}
+.hint-timer { height:2px; background:oklch(from var(--accent) l c h / .15); }
+.hint-timer-fill { height:100%; background:var(--accent); transition:width .12s linear; }
+.hint-text {
+  padding:12px 16px 16px;
+  font-size:16px; font-style:italic; line-height:1.6; color:var(--text);
+}
+
+/* ─── READING PANEL ───────────────────────────────── */
+.rp {
+  border:1px solid var(--border); border-radius:11px;
+  overflow:hidden; background:var(--surface);
+  animation:sd .2s cubic-bezier(.4,0,.2,1);
+}
+.rp-hdr {
+  display:flex; align-items:center; justify-content:space-between;
+  padding:10px 14px;
+  background:var(--sunken); border-bottom:1px solid var(--border);
+}
+.rp-label {
+  font-size:10.5px; font-weight:700; color:var(--text2);
+  text-transform:uppercase; letter-spacing:.08em;
+  display:flex; align-items:center; gap:6px;
+}
+.seg { display:flex; gap:2px; background:var(--interactive); border-radius:7px; padding:2px; }
+.seg-btn {
+  padding:3px 11px; border-radius:5px; font-size:11px; font-weight:600;
+  color:var(--text2); transition:all .15s; cursor:pointer;
+  border:none; background:none; font-family:inherit;
+}
+.seg-btn.on { background:var(--surface); color:var(--text); box-shadow:0 1px 3px oklch(0% 0 0/.1); }
+
+/* sentence variant */
+.rp-sentence { padding:24px 20px; text-align:center; }
+.rp-sentence-text {
+  font-size:19px; font-weight:600; line-height:1.55;
+  letter-spacing:-.02em; color:var(--text);
+}
+/* full text variant */
+.rp-full { max-height:200px; overflow-y:auto; padding:8px; display:flex; flex-direction:column; gap:2px; }
+.rp-item {
+  display:flex; gap:10px; padding:8px 10px; border-radius:7px;
+  font-size:13px; color:var(--text2); line-height:1.55;
+  border-left:2px solid transparent; transition:all .15s;
+}
+.rp-item.on {
+  background:var(--accent-subtle); color:var(--text);
+  border-left-color:var(--accent); font-weight:600;
+}
+.rp-num {
+  min-width:20px; font-size:11px; font-family:var(--font-mono);
+  color:var(--text3); flex-shrink:0; padding-top:1px;
+}
+.rp-item.on .rp-num { color:var(--accent-text); }
+
+/* ─── TEXTAREA ────────────────────────────────────── */
+.input-wrap { display:flex; flex-direction:column; gap:8px; }
+.input-top { display:flex; justify-content:space-between; align-items:baseline; }
+.input-lbl { font-size:13px; font-weight:700; letter-spacing:-.01em; }
+.input-meta { font-size:12px; color:var(--text2); }
+.dta {
+  width:100%; min-height:210px;
+  padding:16px 18px;
+  font-size:16px; line-height:1.8;
+  background:var(--surface);
+  border:1.5px solid var(--border2);
+  border-radius:11px; color:var(--text);
+  outline:none; resize:vertical;
+  transition:border-color .15s, box-shadow .15s;
+  caret-color:var(--accent);
+}
+.dta::placeholder { color:var(--text3); font-style:italic; }
+.dta:focus {
+  border-color:var(--accent);
+  box-shadow:0 0 0 3px oklch(from var(--accent) l c h / .12);
+}
+
+/* ─── ACTION BAR ──────────────────────────────────── */
+.abar { display:flex; align-items:center; gap:10px; }
+.btn-p {
+  display:inline-flex; align-items:center; gap:7px;
+  padding:0 20px; height:40px; border-radius:9px;
+  font-size:14px; font-weight:700; letter-spacing:-.01em;
+  background:var(--accent); color:var(--on-accent);
+  border:none; cursor:pointer; font-family:inherit;
+  transition:background .15s, transform .1s, box-shadow .15s;
+}
+.btn-p:hover:not(:disabled) {
+  background:var(--accent-hover);
+  box-shadow:0 4px 16px oklch(from var(--accent) l c h / .38);
+}
+.btn-p:active { transform:scale(.98); }
+.btn-p:disabled { opacity:.4; cursor:not-allowed; }
+.btn-g {
+  display:inline-flex; align-items:center; gap:7px;
+  padding:0 15px; height:40px; border-radius:9px;
+  font-size:13px; font-weight:600; letter-spacing:-.01em;
+  background:none; color:var(--text2);
+  border:1.5px solid var(--border2);
+  cursor:pointer; font-family:inherit;
+  transition:all .15s;
+}
+.btn-g:hover { color:var(--text); border-color:var(--border2); background:var(--sunken); }
+.btn-g.sm { height:32px; padding:0 12px; font-size:12px; }
+
+/* ─── PLAYER BAR ──────────────────────────────────── */
+.pbar {
+  position:fixed; bottom:0; left:0; right:0; z-index:50;
+  background:color-mix(in oklch, var(--surface) 88%, transparent);
+  border-top:1px solid var(--border);
+  backdrop-filter:blur(18px); -webkit-backdrop-filter:blur(18px);
+}
+.pbar-prog {
+  height:2px; background:var(--sunken);
+  cursor:pointer; position:relative;
+}
+.pbar-prog-fill {
+  height:100%;
+  background:linear-gradient(90deg, var(--accent) 0%, oklch(from var(--accent) calc(l + .08) c calc(h - 25)) 100%);
+  transition:width .1s linear;
+}
+.pbar-inner {
+  max-width:1100px; margin:0 auto; padding:0 24px;
+  height:72px; display:flex; align-items:center; gap:12px;
+}
+.pcontrols { display:flex; align-items:center; gap:4px; flex-shrink:0; }
+.play-btn {
+  width:46px; height:46px; border-radius:50%;
+  background:var(--accent); color:white;
+  border:none; cursor:pointer;
+  display:flex; align-items:center; justify-content:center;
+  transition:background .15s, transform .1s, box-shadow .15s;
+  box-shadow:0 2px 10px oklch(from var(--accent) l c h / .4);
+}
+.play-btn:hover { background:var(--accent-hover); transform:scale(1.06); box-shadow:0 4px 16px oklch(from var(--accent) l c h / .5); }
+.play-btn:active { transform:scale(.97); }
+.ptrack { flex:1; display:flex; align-items:center; gap:12px; min-width:0; }
+.ptrack-bar {
+  flex:1; height:3px; background:var(--sunken);
+  border-radius:999px; overflow:hidden; cursor:pointer;
+}
+.ptrack-fill {
+  height:100%; background:var(--text2);
+  border-radius:999px; transition:width .1s linear;
+}
+.ptime { font-size:11.5px; color:var(--text2); font-family:var(--font-mono); white-space:nowrap; flex-shrink:0; }
+.pextras { display:flex; align-items:center; gap:8px; flex-shrink:0; }
+.speed-grp {
+  display:flex; gap:2px;
+  background:var(--sunken); border-radius:8px; padding:3px;
+}
+.spill {
+  padding:3px 9px; border-radius:5px;
+  font-size:11px; font-weight:700; font-family:var(--font-mono);
+  color:var(--text2); background:none; border:none;
+  cursor:pointer; transition:all .15s;
+}
+.spill.on {
+  background:var(--surface); color:var(--accent-text);
+  box-shadow:0 1px 3px oklch(0% 0 0 / .1);
+}
+
+/* ─── RESULT ──────────────────────────────────────── */
+.rmain {
+  flex:1; max-width:1100px; margin:0 auto; width:100%;
+  padding:32px 24px 100px;
+  display:flex; flex-direction:column; align-items:center;
+}
+.rmain > * { width:100%; max-width:720px; }
+  display:flex; flex-direction:column; gap:20px;
+}
+.r-hero {
+  display:grid; grid-template-columns:auto 1fr;
+  gap:28px; align-items:center;
+  background:var(--surface); border:1px solid var(--border);
+  border-radius:14px; padding:28px;
+}
+.ring-wrap { display:flex; flex-direction:column; align-items:center; gap:9px; }
+.ring {
+  width:100px; height:100px; border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+  position:relative;
+}
+.ring-inner {
+  position:absolute; inset:11px; border-radius:50%;
+  background:var(--surface);
+  display:flex; align-items:center; justify-content:center; z-index:1;
+}
+.ring-pct {
+  font-size:22px; font-weight:800; letter-spacing:-.04em;
+  font-feature-settings:"tnum";
+}
+.ring-lbl {
+  font-size:11px; font-weight:700; color:var(--text2);
+  text-transform:uppercase; letter-spacing:.05em; text-align:center;
+}
+.r-comment {
+  padding-left:24px; border-left:2px solid var(--accent-subtle);
+  display:flex; flex-direction:column; gap:10px;
+}
+.r-comment-text { font-size:15px; font-style:italic; line-height:1.65; color:var(--text); }
+.r-comment-by {
+  font-size:10.5px; font-weight:700; color:var(--text2);
+  display:flex; align-items:center; gap:5px;
+  text-transform:uppercase; letter-spacing:.05em;
+}
+
+.r-stats { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; }
+.r-stat {
+  background:var(--surface); border:1px solid var(--border);
+  border-radius:11px; padding:16px 14px;
+  display:flex; flex-direction:column; gap:4px;
+}
+.r-stat-val {
+  font-size:26px; font-weight:800; letter-spacing:-.04em;
+  font-feature-settings:"tnum"; color:var(--text);
+  line-height:1;
+}
+.r-stat-val.ok { color:var(--warning); }
+.r-stat-lbl { font-size:11px; color:var(--text2); font-weight:500; }
+
+.sec-title {
+  font-size:10.5px; font-weight:800; color:var(--text2);
+  text-transform:uppercase; letter-spacing:.08em; margin-bottom:10px;
+}
+.r-bd { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; }
+.r-bd-card {
+  background:var(--surface); border:1px solid var(--border);
+  border-radius:11px; padding:16px; display:flex; flex-direction:column; gap:6px;
+}
+.r-bd-card.sp { border-top:3px solid var(--error); }
+.r-bd-card.ms { border-top:3px solid oklch(55% 0.18 230); }
+.r-bd-card.ex { border-top:3px solid var(--warning); }
+.r-bd-count { font-size:30px; font-weight:800; letter-spacing:-.04em; line-height:1; }
+.r-bd-card.sp .r-bd-count { color:var(--error); }
+.r-bd-card.ms .r-bd-count { color:oklch(50% 0.18 230); }
+.r-bd-card.ex .r-bd-count { color:var(--warning); }
+.r-bd-lbl { font-size:13px; font-weight:700; color:var(--text); }
+.r-bd-desc { font-size:12px; color:var(--text2); line-height:1.4; }
+.chips { display:flex; flex-wrap:wrap; gap:5px; margin-top:4px; }
+.chip {
+  font-size:11px; font-weight:600; font-family:var(--font-mono);
+  padding:2px 8px; border-radius:999px;
+}
+.chip.sp { background:var(--error-sub); color:var(--error); }
+.chip.ms { background:oklch(94% 0.05 230); color:oklch(40% 0.18 230); }
+.chip.ex { background:var(--warning-sub); color:oklch(44% 0.14 75); }
+
+.diff-card {
+  background:var(--surface); border:1px solid var(--border);
+  border-radius:11px; overflow:hidden;
+}
+.diff-card-hdr {
+  display:flex; align-items:center; justify-content:space-between;
+  padding:10px 16px; background:var(--sunken); border-bottom:1px solid var(--border);
+  font-size:10.5px; font-weight:800; color:var(--text2);
+  text-transform:uppercase; letter-spacing:.08em;
+}
+.diff-card-hdr span:last-child { font-weight:400; text-transform:none; letter-spacing:0; color:var(--text3); }
+.diff-body { padding:18px 18px; display:flex; flex-direction:column; gap:20px; }
+.diff-sent { display:flex; flex-direction:column; gap:7px; }
+.diff-meta { display:flex; justify-content:space-between; align-items:center; }
+.diff-lbl { font-size:11px; font-weight:700; color:var(--text2); font-family:var(--font-mono); text-transform:uppercase; letter-spacing:.04em; }
+.diff-lbl.clean { color:var(--success); }
+.diff-err-badge {
+  font-size:10px; font-weight:700; padding:2px 8px;
+  border-radius:999px; background:var(--error-sub); color:var(--error);
+}
+.diff-words { font-size:15px; line-height:1.85; }
+.dw { display:inline; }
+.dw.correct { color:var(--success); }
+.dw.wrong {
+  color:var(--error); background:var(--error-sub);
+  border-radius:3px; padding:0 2px;
+  text-decoration:underline; text-decoration-style:wavy;
+  text-underline-offset:2px;
+}
+.dw.missing { color:var(--text3); text-decoration:line-through; background:var(--sunken); border-radius:3px; padding:0 2px; }
+.dw.extra { color:var(--warning); background:var(--warning-sub); border-radius:3px; padding:0 2px; }
+
+.llm-card {
+  background:var(--surface); border:1px solid var(--border);
+  border-radius:11px; overflow:hidden;
+}
+.llm-hdr {
+  display:flex; align-items:center; gap:8px;
+  padding:10px 16px; background:var(--sunken); border-bottom:1px solid var(--border);
+  font-size:10.5px; font-weight:800; color:var(--text2);
+  text-transform:uppercase; letter-spacing:.08em;
+}
+.llm-ico {
+  width:22px; height:22px; border-radius:6px;
+  background:var(--accent-subtle); color:var(--accent-text);
+  display:flex; align-items:center; justify-content:center;
+}
+.llm-body { padding:20px; display:flex; flex-direction:column; gap:16px; }
+.llm-item { display:flex; gap:14px; align-items:flex-start; }
+.llm-item+.llm-item { padding-top:16px; border-top:1px solid var(--border); }
+.llm-item-ico {
+  width:34px; height:34px; border-radius:9px; flex-shrink:0;
+  background:var(--accent-subtle); color:var(--accent-text);
+  display:flex; align-items:center; justify-content:center;
+}
+.llm-item-body { display:flex; flex-direction:column; gap:3px; min-width:0; }
+.llm-item-title { font-size:13px; font-weight:700; color:var(--text); }
+.llm-item-text { font-size:13px; color:var(--text2); line-height:1.55; }
+
+.rfooter {
+  position:sticky; bottom:0; z-index:50;
+  background:color-mix(in oklch, var(--surface) 90%, transparent);
+  border-top:1px solid var(--border);
+  backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px);
+}
+.rfooter-inner {
+  max-width:1100px; margin:0 auto; padding:12px 24px;
+  display:flex; justify-content:space-between; align-items:center;
+}
+.rfooter-right { display:flex; gap:10px; }
+
+/* ─── TWEAKS ──────────────────────────────────────── */
+.tweaks {
+  position:fixed; bottom:88px; right:20px; z-index:200;
+  background:var(--surface); border:1px solid var(--border2);
+  border-radius:14px; padding:18px 18px;
+  min-width:236px; box-shadow:var(--shadow-lg);
+  display:flex; flex-direction:column; gap:16px;
+  animation:tweaks-in .2s cubic-bezier(.4,0,.2,1);
+}
+@keyframes tweaks-in { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+.tweaks-title {
+  font-size:10.5px; font-weight:800; color:var(--text2);
+  text-transform:uppercase; letter-spacing:.08em;
+}
+.tweaks-grp { display:flex; flex-direction:column; gap:7px; }
+.tweaks-lbl { font-size:12px; font-weight:700; color:var(--text); }
+.tweaks-row { display:flex; gap:4px; flex-wrap:wrap; }
+.topt {
+  padding:4px 12px; border-radius:6px; font-size:12px; font-weight:600;
+  background:var(--sunken); color:var(--text2);
+  border:1.5px solid transparent; cursor:pointer; transition:all .15s; font-family:inherit;
+}
+.topt.on { background:var(--accent-subtle); color:var(--accent-text); border-color:oklch(from var(--accent) l c h / .25); }
+
+/* ─── SVG ICONS ───────────────────────────────────── */
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script type="text/babel">
+const { useState, useEffect, useRef } = React;
+
+/* ─── INLINE SVG ICONS ─────────────────────────────────── */
+const I = ({ n, s = 16 }) => {
+  const paths = {
+    back:    <><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></>,
+    book:    <><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></>,
+    sun:     <><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></>,
+    moon:    <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9z"/>,
+    play:    <polygon fill="currentColor" stroke="none" points="5 3 19 12 5 21 5 3"/>,
+    pause:   <><rect fill="currentColor" stroke="none" x="6" y="4" width="4" height="16"/><rect fill="currentColor" stroke="none" x="14" y="4" width="4" height="16"/></>,
+    prev:    <><polygon points="19 20 9 12 19 4 19 20"/><line x1="5" x2="5" y1="19" y2="5"/></>,
+    next:    <><polygon points="5 4 15 12 5 20 5 4"/><line x1="19" x2="19" y1="5" y2="19"/></>,
+    rep:     <><path d="m17 2 4 4-4 4"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><path d="m7 22-4-4 4-4"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/><line x1="12" x2="12" y1="9" y2="15"/></>,
+    music:   <><path d="M21 15V6"/><path d="M18.5 18a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5z"/><path d="M12 12H3"/><path d="M16 6H3"/><path d="M12 18H3"/></>,
+    bulb:    <><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"/><path d="M9 18h6"/><path d="M10 22h4"/></>,
+    check2:  <><path d="m6 16 6-12 6 12"/><path d="M8 12h8"/><path d="m16 20 2 2 4-4"/></>,
+    x:       <path d="M18 6 6 18M6 6l12 12"/>,
+    spark:   <><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/><path d="M20 3v4"/><path d="M22 5h-4"/><path d="M4 17v2"/><path d="M5 18H3"/></>,
+    bot:     <><path d="M12 8V4H8"/><rect width="16" height="12" x="4" y="8" rx="2"/><path d="M2 14h2M20 14h2M15 13v2M9 13v2"/></>,
+    chevR:   <path d="m9 18 6-6-6-6"/>,
+    redo:    <><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></>,
+    check:   <path d="M20 6 9 17l-5-5"/>,
+  };
+  return (
+    <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{display:'block'}}>
+      {paths[n]}
+    </svg>
+  );
+};
+
+/* ─── DATA ─────────────────────────────────────────────── */
+const DIC = {
+  title: 'Studying English Online',
+  level: 'B2',
+  total: 23,
+  sentences: [
+    'Studying English online has become increasingly popular in recent years.',
+    'Many learners prefer digital platforms because they offer flexibility and convenience.',
+    'With just a laptop and an internet connection, students can access high-quality lessons from anywhere.',
+    'Interactive exercises and real-time feedback make online learning especially effective.',
+    'Moreover, learners can study at their own pace, revisiting difficult topics whenever necessary.',
+  ],
+};
+
+const DIFF_DATA = [
+  { label:'Sentence 1', clean:false, errors:2, words:[
+    {t:'Studying',cls:'correct'},{t:' English',cls:'correct'},{t:' online',cls:'correct'},
+    {t:' has',cls:'correct'},{t:' become',cls:'correct'},{t:' increasinly',cls:'wrong'},
+    {t:' popular',cls:'correct'},{t:' in',cls:'correct'},{t:' recent',cls:'correct'},{t:' years.',cls:'correct'},
+  ]},
+  { label:'Sentence 2', clean:true, errors:0, words:[
+    {t:'Many',cls:'correct'},{t:' learners',cls:'correct'},{t:' prefer',cls:'correct'},
+    {t:' digital',cls:'correct'},{t:' platforms',cls:'correct'},{t:' because',cls:'correct'},
+    {t:' they',cls:'correct'},{t:' offer',cls:'correct'},{t:' flexibility',cls:'correct'},
+    {t:' and',cls:'correct'},{t:' convenience.',cls:'correct'},
+  ]},
+  { label:'Sentence 3', clean:false, errors:3, words:[
+    {t:'With',cls:'correct'},{t:' just',cls:'correct'},{t:' a',cls:'correct'},
+    {t:' laptop',cls:'correct'},{t:' and',cls:'extra'},{t:' also',cls:'extra'},
+    {t:' an',cls:'correct'},{t:' internet',cls:'correct'},{t:' connection,',cls:'correct'},
+    {t:' students',cls:'missing'},{t:' learners',cls:'wrong'},
+  ]},
+];
+
+/* ─── TWEAKS DEFAULTS ──────────────────────────────────── */
+const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
+  "font": "Plus Jakarta Sans",
+  "hue": 270,
+  "theme": "light"
+}/*EDITMODE-END*/;
+
+/* ─── APP ──────────────────────────────────────────────── */
+const STATES = ['Empty','In Progress','Hint','Reading: Sentence','Reading: Full','Result'];
+
+function App() {
+  const saved = () => { try { return JSON.parse(localStorage.getItem('dictify-player-tweaks') || '{}'); } catch { return {}; } };
+  const [theme,  setThemeRaw ] = useState(() => saved().theme  || TWEAK_DEFAULTS.theme);
+  const [font,   setFontRaw  ] = useState(() => saved().font   || TWEAK_DEFAULTS.font);
+  const [hue,    setHueRaw   ] = useState(() => saved().hue    || TWEAK_DEFAULTS.hue);
+  const [view,   setView     ] = useState('In Progress');
+  const [playing,setPlaying  ] = useState(false);
+  const [speed,  setSpeed    ] = useState('1×');
+  const [sent,   setSent     ] = useState(4);
+  const [hint,   setHint     ] = useState(false);
+  const [hintT,  setHintT    ] = useState(100);
+  const [readM,  setReadM    ] = useState(false);
+  const [readV,  setReadV    ] = useState('sentence');
+  const [text,   setText     ] = useState('');
+  const [audio,  setAudio    ] = useState(0);
+  const [tweaksV,setTweaksV  ] = useState(false);
+
+  const hintRef = useRef(null);
+  const audioRef = useRef(null);
+
+  const persist = (key, val) => {
+    const s = saved(); s[key] = val;
+    localStorage.setItem('dictify-player-tweaks', JSON.stringify(s));
+  };
+
+  const setTheme = v => { setThemeRaw(v); persist('theme', v); };
+  const setFont  = v => { setFontRaw(v);  persist('font',  v); };
+  const setHue   = v => { setHueRaw(v);   persist('hue',   v); };
+
+  /* apply theme/font/hue to DOM */
+  useEffect(() => { document.documentElement.setAttribute('data-theme', theme); }, [theme]);
+  useEffect(() => { document.documentElement.style.setProperty('--font-sans', `'${font}', system-ui, sans-serif`); }, [font]);
+  useEffect(() => { document.documentElement.style.setProperty('--hue', hue); }, [hue]);
+
+  /* hint countdown */
+  useEffect(() => {
+    if (!hint) { clearInterval(hintRef.current); return; }
+    setHintT(100);
+    hintRef.current = setInterval(() => {
+      setHintT(t => { if (t <= 0) { clearInterval(hintRef.current); setHint(false); return 0; } return t - 2; });
+    }, 150);
+    return () => clearInterval(hintRef.current);
+  }, [hint]);
+
+  /* audio progress simulation */
+  useEffect(() => {
+    if (!playing) { clearInterval(audioRef.current); return; }
+    audioRef.current = setInterval(() => {
+      setAudio(p => { if (p >= 100) { setPlaying(false); return 0; } return p + .8; });
+    }, 60);
+    return () => clearInterval(audioRef.current);
+  }, [playing]);
+
+  /* state presets */
+  useEffect(() => {
+    if (view === 'Empty') {
+      setText(''); setSent(1); setHint(false); setReadM(false); setPlaying(false); setAudio(0);
+    } else if (view === 'In Progress') {
+      setText('Studying English Online\n\nStudying English online has become increasingly popular in recent years.\n\nMany learners prefer digital platforms because they offer flexibility and convenience.');
+      setSent(4); setHint(false); setReadM(false);
+    } else if (view === 'Hint') {
+      setText('Studying English Online\n\nStudying English online has become increasingly popular in recent years.\n\nMany learners prefer digital platforms because they offer flexibility and convenience.\n\nWith just a laptop and an internet connection, students can access high-quality lessons from anywhere.');
+      setSent(5); setHint(true); setReadM(false);
+    } else if (view === 'Reading: Sentence') {
+      setText('Studying English Online\n\nStudying English online has become increasingly popular in recent years.\n\nMany learners prefer digital platforms because they offer flexibility and convenience.\n\nWith just a laptop and an internet connection, students can access high-quality lessons from anywhere.');
+      setSent(5); setHint(false); setReadM(true); setReadV('sentence');
+    } else if (view === 'Reading: Full') {
+      setText('Studying English Online\n\nStudying English online has become increasingly popular in recent years.\n\nMany learners prefer digital platforms because they offer flexibility and convenience.\n\nWith just a laptop and an internet connection, students can access high-quality lessons from anywhere.');
+      setSent(5); setHint(false); setReadM(true); setReadV('full');
+    }
+  }, [view]);
+
+  /* tweaks messages */
+  useEffect(() => {
+    const h = e => {
+      if (e.data?.type === '__activate_edit_mode')   setTweaksV(true);
+      if (e.data?.type === '__deactivate_edit_mode')  setTweaksV(false);
+    };
+    window.addEventListener('message', h);
+    window.parent.postMessage({ type: '__edit_mode_available' }, '*');
+    return () => window.removeEventListener('message', h);
+  }, []);
+
+  const pct = Math.round((sent / DIC.total) * 100);
+  const isResult = view === 'Result';
+
+  return (
+    <div style={{ display:'flex', flexDirection:'column', minHeight:'100dvh' }}>
+      {/* STATE NAV */}
+      <nav className="sn">
+        <span className="sn-lbl">States:</span>
+        {STATES.map((s,i) => (
+          <button key={s} className={`sn-btn ${view===s?'on':''}`} onClick={() => setView(s)}>
+            {i+1}. {s}
+          </button>
+        ))}
+        <div className="sn-sep"/>
+        <button className="sn-btn" style={{color:'oklch(60% .01 270)'}} onClick={() => setTweaksV(v=>!v)}>⚙ Tweaks</button>
+      </nav>
+
+      {/* SHARED NAV — identical to Landing Page */}
+      <nav className="nav">
+        <div className="nav-in">
+          <a href="Landing Page.html" className="logo">
+            <span className="logo-dot"/><span>Dictify</span>
+          </a>
+          <div className="nav-links">
+            <a className="nav-link on" href="#">Dictations</a>
+            <a className="nav-link" href="#">Analytics</a>
+            <a className="nav-link" href="#">Connections</a>
+          </div>
+          <div className="nav-actions">
+            <button className="ibtn" onClick={() => setTheme(t=>t==='dark'?'light':'dark')}>
+              <I n={theme==='dark'?'sun':'moon'} s={15}/>
+            </button>
+          </div>
+        </div>
+      </nav>
+
+      {isResult ? (
+        <ResultPage onBack={() => setView('In Progress')} theme={theme} onTheme={() => setTheme(t=>t==='dark'?'light':'dark')} />
+      ) : (
+        <>
+          {/* CONTEXT BAR — dictation-specific info below shared nav */}
+          <div className="ctx-bar">
+            <div className="ctx-bar-row">
+              <button className="ibtn" aria-label="back" style={{flexShrink:0}}><I n="back" s={16}/></button>
+              <div className="ph-info">
+                <div className="ph-title">{DIC.title}</div>
+                <div className="ph-meta">
+                  <span className="lvl-badge">{DIC.level}</span>
+                  <span className="counter">{sent} / {DIC.total}</span>
+                </div>
+              </div>
+              <div className="ph-actions">
+                <button className={`ibtn ${readM?'on':''}`} onClick={() => setReadM(m=>!m)} aria-label="reading mode">
+                  <I n="book" s={16}/>
+                </button>
+              </div>
+            </div>
+            <div className="prog-strip">
+              <div className="prog-fill" style={{width:`${pct}%`}}/>
+            </div>
+          </div>
+
+          {/* MAIN */}
+          <main className="pmain">
+            {hint && (
+              <div className="hint-panel" key="hint">
+                <div className="hint-hdr">
+                  <div className="hint-label"><I n="bulb" s={13}/> Hint · Sentence {sent}</div>
+                  <button className="ibtn" style={{width:24,height:24,borderRadius:5}} onClick={() => setHint(false)}>
+                    <I n="x" s={12}/>
+                  </button>
+                </div>
+                <div className="hint-timer"><div className="hint-timer-fill" style={{width:`${hintT}%`}}/></div>
+                <div className="hint-text">{DIC.sentences[sent-1]}</div>
+              </div>
+            )}
+
+            {readM && (
+              <div className="rp" key="reading">
+                <div className="rp-hdr">
+                  <div className="rp-label"><I n="book" s={13}/> Reading Mode</div>
+                  <div className="seg">
+                    <button className={`seg-btn ${readV==='sentence'?'on':''}`} onClick={() => setReadV('sentence')}>Sentence</button>
+                    <button className={`seg-btn ${readV==='full'?'on':''}`} onClick={() => setReadV('full')}>Full Text</button>
+                  </div>
+                </div>
+                {readV === 'sentence' ? (
+                  <div className="rp-sentence">
+                    <div className="rp-sentence-text">{DIC.sentences[sent-1]}</div>
+                  </div>
+                ) : (
+                  <div className="rp-full">
+                    {DIC.sentences.map((s,i) => (
+                      <div key={i} className={`rp-item ${i+1===sent?'on':''}`}>
+                        <span className="rp-num">{String(i+1).padStart(2,'0')}</span>
+                        <span>{s}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+
+            <div className="input-wrap">
+              <div className="input-top">
+                <label className="input-lbl" htmlFor="dta">Your dictation</label>
+                <span className="input-meta">{text.split('\n').filter(l=>l.trim()).length} lines typed</span>
+              </div>
+              <textarea
+                id="dta" className="dta"
+                value={text} onChange={e => setText(e.target.value)}
+                placeholder="Type what you hear… (all sentences go here)"
+                spellCheck={false} rows={10}
+              />
+            </div>
+
+            <div className="abar">
+              <button className="btn-g" onClick={() => setHint(h=>!h)}>
+                <I n="bulb" s={14}/> Hint
+              </button>
+              <button className="btn-p" onClick={() => setView('Result')} disabled={!text.trim()}>
+                <I n="check2" s={14}/> Check answer
+              </button>
+            </div>
+          </main>
+
+          {/* PLAYER BAR */}
+          <footer className="pbar" aria-label="Audio player">
+            <div className="pbar-prog">
+              <div className="pbar-prog-fill" style={{width:`${audio}%`}}/>
+            </div>
+            <div className="pbar-inner">
+              <div className="pcontrols">
+                <button className="ibtn" aria-label="prev"><I n="prev" s={16}/></button>
+                <button className="play-btn" onClick={() => setPlaying(p=>!p)}>
+                  <I n={playing?'pause':'play'} s={18}/>
+                </button>
+                <button className="ibtn" aria-label="next"><I n="next" s={16}/></button>
+                <button className="ibtn" aria-label="repeat"><I n="rep" s={16}/></button>
+              </div>
+              <div className="ptrack">
+                <div className="ptrack-bar">
+                  <div className="ptrack-fill" style={{width:`${audio}%`}}/>
+                </div>
+                <span className="ptime">0:00 / 2:15</span>
+              </div>
+              <div className="pextras">
+                <div className="speed-grp">
+                  {['0.75×','1×','1.25×'].map(s => (
+                    <button key={s} className={`spill ${speed===s?'on':''}`} onClick={() => setSpeed(s)}>{s}</button>
+                  ))}
+                </div>
+                <button className="btn-g sm"><I n="music" s={13}/> Play All</button>
+              </div>
+            </div>
+          </footer>
+        </>
+      )}
+
+      {tweaksV && (
+        <TweaksPanel
+          font={font} onFont={setFont}
+          hue={hue}   onHue={setHue}
+          theme={theme} onTheme={setTheme}
+        />
+      )}
+    </div>
+  );
+}
+
+/* ─── RESULT PAGE ──────────────────────────────────────── */
+function ResultPage({ onBack, theme, onTheme }) {
+  const score = 78;
+  const pctS = `${score}%`;
+  const ringColor = 'oklch(68% 0.16 75)';
+
+  return (
+    <div style={{display:'flex',flexDirection:'column',flex:1}}>
+      <nav className="nav">
+        <div className="nav-in">
+          <a href="Landing Page.html" className="logo">
+            <span className="logo-dot"/><span>Dictify</span>
+          </a>
+          <div className="nav-links">
+            <a className="nav-link on" href="#">Dictations</a>
+            <a className="nav-link" href="#">Analytics</a>
+            <a className="nav-link" href="#">Connections</a>
+          </div>
+          <div className="nav-actions">
+            <button className="ibtn" onClick={onTheme}><I n={theme==='dark'?'sun':'moon'} s={15}/></button>
+          </div>
+        </div>
+      </nav>
+      <div className="ctx-bar">
+        <div className="ctx-bar-row">
+          <button className="ibtn" onClick={onBack}><I n="back" s={16}/></button>
+          <div className="ph-info">
+            <div className="ph-title">{DIC.title} — Results</div>
+            <div className="ph-meta"><span className="lvl-badge">{DIC.level}</span></div>
+          </div>
+          <div className="ph-actions">
+            <button className="btn-g" style={{height:32,padding:'0 12px',fontSize:12}} onClick={onBack}>Try Again</button>
+          </div>
+        </div>
+      </div>
+
+      <main className="rmain">
+        {/* Hero */}
+        <div className="r-hero">
+          <div className="ring-wrap">
+            <div className="ring" style={{background:`conic-gradient(${ringColor} ${pctS}, var(--sunken) ${pctS})`}}>
+              <div className="ring-inner">
+                <div className="ring-pct" style={{color:ringColor}}>{score}%</div>
+              </div>
+            </div>
+            <div className="ring-lbl">Good progress</div>
+          </div>
+          <div className="r-comment">
+            <div className="r-comment-text">
+              "Solid listening comprehension. Focus on spelling — you're consistently dropping letters in long adverbs and missing unstressed syllables."
+            </div>
+            <div className="r-comment-by">
+              <span style={{color:'var(--accent)',display:'flex',alignItems:'center'}}><I n="spark" s={12}/></span>
+              Dictify AI Review
+            </div>
+          </div>
+        </div>
+
+        {/* Stats */}
+        <div className="r-stats">
+          {[
+            {v:'147', l:'Words in original'},
+            {v:'78%', l:'Accuracy', mod:'ok'},
+            {v:'4:32', l:'Time spent'},
+            {v:'5 / 5', l:'Sentences'},
+          ].map(s => (
+            <div key={s.l} className="r-stat">
+              <div className={`r-stat-val ${s.mod||''}`}>{s.v}</div>
+              <div className="r-stat-lbl">{s.l}</div>
+            </div>
+          ))}
+        </div>
+
+        {/* Error breakdown */}
+        <div>
+          <div className="sec-title">Error Breakdown</div>
+          <div className="r-bd">
+            <div className="r-bd-card sp">
+              <div className="r-bd-count">12</div>
+              <div className="r-bd-lbl">Spelling errors</div>
+              <div className="r-bd-desc">Words written incorrectly</div>
+              <div className="chips">
+                {['increasingly','become','digital'].map(w=><span key={w} className="chip sp">{w}</span>)}
+              </div>
+            </div>
+            <div className="r-bd-card ms">
+              <div className="r-bd-count">5</div>
+              <div className="r-bd-lbl">Missing words</div>
+              <div className="r-bd-desc">Words you didn't include</div>
+              <div className="chips">
+                {['students','especially','with'].map(w=><span key={w} className="chip ms">{w}</span>)}
+              </div>
+            </div>
+            <div className="r-bd-card ex">
+              <div className="r-bd-count">3</div>
+              <div className="r-bd-lbl">Extra words</div>
+              <div className="r-bd-desc">Words not in the original</div>
+              <div className="chips">
+                {['also','and'].map(w=><span key={w} className="chip ex">{w}</span>)}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Diff */}
+        <div>
+          <div className="sec-title">Full Text Comparison</div>
+          <div className="diff-card">
+            <div className="diff-card-hdr">
+              <span>Word-level diff</span>
+              <span>3 of 5 sentences shown</span>
+            </div>
+            <div className="diff-body">
+              {DIFF_DATA.map((s,i) => (
+                <div key={i} className="diff-sent">
+                  <div className="diff-meta">
+                    <div className={`diff-lbl ${s.clean?'clean':''}`}>
+                      {s.clean && <span style={{marginRight:4}}>✓</span>}{s.label}
+                    </div>
+                    {!s.clean && <div className="diff-err-badge">{s.errors} error{s.errors!==1?'s':''}</div>}
+                  </div>
+                  <div className="diff-words">
+                    {s.words.map((w,j) => <span key={j} className={`dw ${w.cls}`}>{w.t}</span>)}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* LLM */}
+        <div className="llm-card">
+          <div className="llm-hdr">
+            <div className="llm-ico"><I n="bot" s={12}/></div>
+            AI Analysis
+          </div>
+          <div className="llm-body">
+            {[
+              {t:'Grammar pattern', d:'You consistently drop articles before nouns. Remember: "a laptop", "an internet connection" require articles in English.'},
+              {t:'Spelling pattern', d:'Double consonants cause issues: "increasingly" not "increasinly". Practice words with -ingly suffix.'},
+              {t:'Vocabulary note',  d:'Great job using "flexibility" and "convenience" correctly — these are B2-level collocations.'},
+              {t:'Extra words',      d:'You added connectors ("also") that break sentence rhythm. Listen for natural pauses in the audio.'},
+            ].map((item,i) => (
+              <div key={i} className="llm-item">
+                <div className="llm-item-ico"><I n="spark" s={14}/></div>
+                <div className="llm-item-body">
+                  <div className="llm-item-title">{item.t}</div>
+                  <div className="llm-item-text">{item.d}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </main>
+
+      <div className="rfooter">
+        <div className="rfooter-inner">
+          <button className="btn-g" onClick={onBack}><I n="back" s={14}/> Back to List</button>
+          <div className="rfooter-right">
+            <button className="btn-g"><I n="redo" s={14}/> Try Again</button>
+            <button className="btn-p">Next Dictation <I n="chevR" s={14}/></button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ─── TWEAKS PANEL ─────────────────────────────────────── */
+function TweaksPanel({ font, onFont, hue, onHue, theme, onTheme }) {
+  const fonts = [
+    { k:'Plus Jakarta Sans', l:'Jakarta' },
+    { k:'DM Sans',           l:'DM Sans' },
+    { k:'Outfit',            l:'Outfit'  },
+  ];
+  const hues = [
+    { h:270, l:'Violet' },
+    { h:230, l:'Indigo' },
+    { h:160, l:'Emerald'},
+    { h:15,  l:'Rose'   },
+    { h:50,  l:'Amber'  },
+  ];
+  return (
+    <div className="tweaks">
+      <div className="tweaks-title">Tweaks</div>
+      <div className="tweaks-grp">
+        <div className="tweaks-lbl">Font</div>
+        <div className="tweaks-row">
+          {fonts.map(f=>(
+            <button key={f.k} className={`topt ${font===f.k?'on':''}`} onClick={()=>onFont(f.k)}>{f.l}</button>
+          ))}
+        </div>
+      </div>
+      <div className="tweaks-grp">
+        <div className="tweaks-lbl">Accent Color</div>
+        <div className="tweaks-row">
+          {hues.map(h=>(
+            <button key={h.h} className={`topt ${hue===h.h?'on':''}`} onClick={()=>onHue(h.h)}
+              style={{display:'flex',alignItems:'center',gap:6}}>
+              <span style={{width:8,height:8,borderRadius:'50%',background:`oklch(60% 0.22 ${h.h})`,flexShrink:0,display:'inline-block'}}/>
+              {h.l}
+            </button>
+          ))}
+        </div>
+      </div>
+      <div className="tweaks-grp">
+        <div className="tweaks-lbl">Theme</div>
+        <div className="tweaks-row">
+          <button className={`topt ${theme==='light'?'on':''}`} onClick={()=>onTheme('light')}>Light</button>
+          <button className={`topt ${theme==='dark'?'on':''}`}  onClick={()=>onTheme('dark')}>Dark</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+</body>
+</html>
