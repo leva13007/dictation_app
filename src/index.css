@@ -1,58 +1,163 @@
-/* http://meyerweb.com/eric/tools/css/reset/ 
-   v2.0 | 20110126
-   License: none (public domain)
-*/
+/* Design tokens extracted from DictationList.html design */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
 
-html, body{
-	height: 100vh;
+:root {
+  --hue-brand: 230; --hue-success: 142; --hue-error: 25;
+  --hue-warning: 75; --hue-neutral: 230;
+  --neutral-0:   oklch(100%  0      var(--hue-neutral));
+  --neutral-50:  oklch(97%   0.004  var(--hue-neutral));
+  --neutral-100: oklch(94%   0.006  var(--hue-neutral));
+  --neutral-200: oklch(88%   0.008  var(--hue-neutral));
+  --neutral-300: oklch(78%   0.010  var(--hue-neutral));
+  --neutral-400: oklch(65%   0.012  var(--hue-neutral));
+  --neutral-500: oklch(52%   0.012  var(--hue-neutral));
+  --neutral-600: oklch(40%   0.010  var(--hue-neutral));
+  --neutral-700: oklch(30%   0.009  var(--hue-neutral));
+  --neutral-800: oklch(20%   0.008  var(--hue-neutral));
+  --neutral-900: oklch(13%   0.007  var(--hue-neutral));
+  --neutral-950: oklch(8%    0.005  var(--hue-neutral));
+  --brand-300: oklch(80% 0.14 var(--hue-brand));
+  --brand-400: oklch(68% 0.18 var(--hue-brand));
+  --brand-500: oklch(56% 0.22 var(--hue-brand));
+  --brand-600: oklch(46% 0.22 var(--hue-brand));
+  --brand-700: oklch(36% 0.20 var(--hue-brand));
+  /* Semantic – light (default) */
+  --bg-base:        var(--neutral-50);
+  --bg-surface:     var(--neutral-0);
+  --bg-elevated:    var(--neutral-0);
+  --bg-sunken:      var(--neutral-100);
+  --bg-interactive: var(--neutral-100);
+  --text-primary:     var(--neutral-900);
+  --text-secondary:   var(--neutral-600);
+  --text-tertiary:    var(--neutral-400);
+  --text-placeholder: var(--neutral-400);
+  --text-disabled:    var(--neutral-300);
+  --text-on-accent:   oklch(100% 0 0);
+  --border-soft:   var(--neutral-200);
+  --border-medium: var(--neutral-300);
+  --border-strong: var(--neutral-500);
+  --accent:        var(--brand-500);
+  --accent-hover:  var(--brand-600);
+  --accent-subtle: oklch(95% 0.04 var(--hue-brand));
+  --accent-text:   var(--brand-600);
+  --success:        oklch(55% 0.18 var(--hue-success));
+  --success-subtle: oklch(95% 0.06 var(--hue-success));
+  --error:          oklch(55% 0.20 var(--hue-error));
+  --error-subtle:   oklch(96% 0.07 var(--hue-error));
+  --warning:        oklch(68% 0.16 var(--hue-warning));
+  --warning-subtle: oklch(96% 0.07 var(--hue-warning));
+  --shadow-sm: 0 1px 2px  oklch(0% 0 0 / 0.06);
+  --shadow-md: 0 4px 12px oklch(0% 0 0 / 0.08);
+  --shadow-lg: 0 8px 24px oklch(0% 0 0 / 0.10);
+  /* Level hues */
+  --level-hue-a1: 145; --level-hue-a2: 165;
+  --level-hue-b1: 210; --level-hue-b2: 230;
+  --level-hue-c1: 280; --level-hue-c2: 310;
+  /* Font */
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+  --font-scale: 1;
+  --text-xs:   calc(0.75rem  * var(--font-scale));
+  --text-sm:   calc(0.875rem * var(--font-scale));
+  --text-base: calc(1rem     * var(--font-scale));
+  --text-md:   calc(1.125rem * var(--font-scale));
+  --text-lg:   calc(1.25rem  * var(--font-scale));
+  --text-xl:   calc(1.5rem   * var(--font-scale));
+  --text-2xl:  calc(1.875rem * var(--font-scale));
+  --text-3xl:  calc(2.25rem  * var(--font-scale));
+  --leading-tight: 1.25; --leading-normal: 1.5; --leading-loose: 1.75;
+  --weight-regular: 400; --weight-medium: 500;
+  --weight-semibold: 600; --weight-bold: 700;
+  --space-1: 0.25rem; --space-2: 0.5rem; --space-3: 0.75rem;
+  --space-4: 1rem;    --space-5: 1.25rem; --space-6: 1.5rem;
+  --space-8: 2rem;    --space-10: 2.5rem; --space-12: 3rem;
+  --space-16: 4rem;
+  --radius-sm: 4px; --radius-md: 8px; --radius-lg: 12px;
+  --radius-xl: 16px; --radius-2xl: 24px; --radius-full: 9999px;
 }
 
-html, body, div, span, applet, object, iframe,
-h1, h2, h3, h4, h5, h6, p, blockquote, pre,
-a, abbr, acronym, address, big, cite, code,
-del, dfn, em, img, ins, kbd, q, s, samp,
-small, strike, strong, sub, sup, tt, var,
-b, u, i, center,
-dl, dt, dd, ol, ul, li,
-fieldset, form, label, legend,
-table, caption, tbody, tfoot, thead, tr, th, td,
-article, aside, canvas, details, embed, 
-figure, figcaption, footer, header, hgroup, 
-menu, nav, output, ruby, section, summary,
-time, mark, audio, video {
-	margin: 0;
-	padding: 0;
-	border: 0;
-	font-size: 100%;
-	font: inherit;
-	vertical-align: baseline;
+[data-theme="dark"] {
+  --bg-base:        var(--neutral-950);
+  --bg-surface:     var(--neutral-900);
+  --bg-elevated:    var(--neutral-800);
+  --bg-sunken:      oklch(10% 0.006 var(--hue-neutral));
+  --bg-interactive: var(--neutral-800);
+  --text-primary:    var(--neutral-50);
+  --text-secondary:  var(--neutral-300);
+  --text-placeholder:var(--neutral-500);
+  --text-disabled:   var(--neutral-700);
+  --border-soft:   var(--neutral-800);
+  --border-medium: var(--neutral-700);
+  --border-strong: var(--neutral-500);
+  --accent:        var(--brand-400);
+  --accent-hover:  var(--brand-300);
+  --accent-subtle: oklch(18% 0.06 var(--hue-brand));
+  --accent-text:   var(--brand-300);
+  --success:        oklch(65% 0.18 var(--hue-success));
+  --success-subtle: oklch(20% 0.08 var(--hue-success));
+  --error:          oklch(65% 0.18 var(--hue-error));
+  --error-subtle:   oklch(18% 0.09 var(--hue-error));
+  --warning:        oklch(75% 0.15 var(--hue-warning));
+  --warning-subtle: oklch(20% 0.08 var(--hue-warning));
+  --shadow-sm: 0 1px 3px oklch(0% 0 0 / 0.30);
+  --shadow-md: 0 4px 12px oklch(0% 0 0 / 0.35);
+  --shadow-lg: 0 8px 24px oklch(0% 0 0 / 0.40);
 }
-/* HTML5 display-role reset for older browsers */
-article, aside, details, figcaption, figure, 
-footer, header, hgroup, menu, nav, section {
-	display: block;
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg-base:        var(--neutral-950);
+    --bg-surface:     var(--neutral-900);
+    --bg-elevated:    var(--neutral-800);
+    --bg-sunken:      oklch(10% 0.006 var(--hue-neutral));
+    --bg-interactive: var(--neutral-800);
+    --text-primary:    var(--neutral-50);
+    --text-secondary:  var(--neutral-300);
+    --text-placeholder:var(--neutral-500);
+    --text-disabled:   var(--neutral-700);
+    --border-soft:   var(--neutral-800);
+    --border-medium: var(--neutral-700);
+    --border-strong: var(--neutral-500);
+    --accent:        var(--brand-400);
+    --accent-hover:  var(--brand-300);
+    --accent-subtle: oklch(18% 0.06 var(--hue-brand));
+    --accent-text:   var(--brand-300);
+    --success:        oklch(65% 0.18 var(--hue-success));
+    --success-subtle: oklch(20% 0.08 var(--hue-success));
+    --error:          oklch(65% 0.18 var(--hue-error));
+    --error-subtle:   oklch(18% 0.09 var(--hue-error));
+    --warning:        oklch(75% 0.15 var(--hue-warning));
+    --warning-subtle: oklch(20% 0.08 var(--hue-warning));
+    --shadow-sm: 0 1px 3px oklch(0% 0 0 / 0.30);
+    --shadow-md: 0 4px 12px oklch(0% 0 0 / 0.35);
+    --shadow-lg: 0 8px 24px oklch(0% 0 0 / 0.40);
+  }
 }
+
+/* ── BASE RESET ─────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; }
+* { margin: 0; padding: 0; }
+html { font-size: 16px; -webkit-text-size-adjust: 100%; }
 body {
-	line-height: 1;
+  font-family: var(--font-sans);
+  font-size: var(--text-base);
+  font-weight: var(--weight-regular);
+  line-height: var(--leading-normal);
+  color: var(--text-primary);
+  background-color: var(--bg-base);
+  min-height: 100dvh;
+  -webkit-font-smoothing: antialiased;
+  transition: background-color 0.2s, color 0.2s;
 }
-ol, ul {
-	list-style: none;
-}
-blockquote, q {
-	quotes: none;
-}
-blockquote:before, blockquote:after,
-q:before, q:after {
-	content: '';
-	content: none;
-}
-table {
-	border-collapse: collapse;
-	border-spacing: 0;
-}
-
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
-}
+h1,h2,h3,h4,h5,h6 { font-weight: var(--weight-semibold); line-height: var(--leading-tight); color: var(--text-primary); }
+p { color: var(--text-secondary); }
+a { color: var(--accent-text); text-decoration: underline; text-underline-offset: 3px; }
+a:hover { color: var(--accent-hover); }
+ul, ol { list-style: none; }
+img, svg, video { display: block; max-width: 100%; }
+input, textarea, select, button { font: inherit; color: inherit; }
+button { cursor: pointer; border: none; background: none; display: inline-flex; align-items: center; justify-content: center; gap: var(--space-2); }
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border-medium); border-radius: var(--radius-full); }
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border-width: 0; }
