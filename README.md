@@ -1,3 +1,9 @@
+---
+status: active
+category: apps
+stack: React, TypeScript, Vite
+---
+
 # Dictation App
 
 A lightweight React + Vite tool for running audio dictations. It plays through a configurable playlist of audio clips, lets you replay sentences at different speeds, shows optional hints, and provides a text box so learners can type what they hear.
