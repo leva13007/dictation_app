@@ -52,3 +52,32 @@ export const formatDuration = (seconds: number): string => {
   const s = Math.round(seconds % 60);
   return `~${m}:${s.toString().padStart(2, '0')} min`;
 };
+
+export type WordDiffToken = {
+  text: string;
+  cls: 'correct' | 'wrong' | 'missing' | 'extra';
+};
+
+export type SentenceDiff = {
+  expected: string;
+  actual: string;
+  tokens: WordDiffToken[];
+  errorCount: number;
+  clean: boolean;
+};
+
+export type OllamaAnalysis = {
+  comment: string;
+  patterns: Array<{ title: string; description: string }>;
+};
+
+export type CheckResult = {
+  sentences: SentenceDiff[];
+  totalWords: number;
+  accuracy: number;
+  spellingErrors: string[];
+  missingWords: string[];
+  extraWords: string[];
+  aiAnalysis: OllamaAnalysis | null;
+  timeSpent: number;
+};

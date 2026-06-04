@@ -1,12 +1,16 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+import { ResultView } from '../components/ResultView';
 import { TopBar } from '../components/TopBar';
+import { getAIAnalysis } from '../services/ollama';
 import {
+  type CheckResult,
   type PlaylistRecord,
   SOURCE_BASE_URL,
   toAudioUrl,
   validatePlaylist,
 } from '../types';
+import { computeDiff } from '../utils/diff';
 import styles from './PlayerPage.module.css';
 
 const SPEEDS = [0.75, 1, 1.25] as const;
@@ -35,6 +39,10 @@ export const PlayerPage = () => {
   const [readingView, setReadingView] = useState<'sentence' | 'full'>('sentence');
 
   const [text, setText] = useState('');
+
+  const [checkPhase, setCheckPhase] = useState<'idle' | 'checking' | 'done'>('idle');
+  const [checkResult, setCheckResult] = useState<CheckResult | null>(null);
+  const startTimeRef = useRef<number | null>(null);
 
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
@@ -147,6 +155,44 @@ export const PlayerPage = () => {
 
   const toggleHint = useCallback(() => setShowHint(h => !h), []);
 
+  const handleCheck = useCallback(async () => {
+    setCheckPhase('checking');
+    const timeSpent = startTimeRef.current
+      ? Math.round((Date.now() - startTimeRef.current) / 1000)
+      : 0;
+
+    const userLines = text.split('\n').map(l => l.trim());
+    const diff = computeDiff(playlist, userLines);
+
+    let aiAnalysis = null;
+    try {
+      aiAnalysis = await getAIAnalysis(
+        playlist.map(p => p.text),
+        userLines,
+        {
+          spellingErrors: diff.spellingErrors,
+          missingWords: diff.missingWords,
+          extraWords: diff.extraWords,
+          accuracy: diff.accuracy,
+        },
+      );
+    } catch {
+      // Ollama not running — show results without AI analysis
+    }
+
+    setCheckResult({ ...diff, aiAnalysis, timeSpent });
+    setCheckPhase('done');
+  }, [text, playlist]);
+
+  const handleTryAgain = useCallback(() => {
+    setCheckPhase('idle');
+    setCheckResult(null);
+    setText('');
+    startTimeRef.current = null;
+    setCurrentIndex(0);
+    setPlaying(false);
+  }, []);
+
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
       if (e.ctrlKey) {
@@ -187,6 +233,21 @@ export const PlayerPage = () => {
           <p style={{ color: 'var(--error)' }}>{error || 'Playlist not found.'}</p>
           <button className={styles.backBtn} onClick={() => navigate('/list')}>← Back to list</button>
         </main>
+      </div>
+    );
+  }
+
+  if (checkPhase === 'done' && checkResult) {
+    return (
+      <div className={styles.layout}>
+        <TopBar />
+        <ResultView
+          title={title}
+          level={level}
+          result={checkResult}
+          onTryAgain={handleTryAgain}
+          onBack={() => navigate('/list')}
+        />
       </div>
     );
   }
@@ -308,8 +369,11 @@ export const PlayerPage = () => {
             id="dta"
             className={styles.dta}
             value={text}
-            onChange={e => setText(e.target.value)}
-            placeholder="Type what you hear… (all sentences go here)"
+            onChange={e => {
+              if (!startTimeRef.current) startTimeRef.current = Date.now();
+              setText(e.target.value);
+            }}
+            placeholder="One sentence per line — press Enter after each."
             spellCheck={false}
             rows={10}
           />
@@ -324,11 +388,27 @@ export const PlayerPage = () => {
             </svg>
             Hint
           </button>
-          <button className={styles.btnP} disabled={!text.trim()}>
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-              <polyline points="20 6 9 17 4 12"/>
-            </svg>
-            Check answer
+          <button
+            className={styles.btnP}
+            disabled={!text.trim() || checkPhase === 'checking'}
+            onClick={() => void handleCheck()}
+          >
+            {checkPhase === 'checking' ? (
+              <>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={styles.spinIcon}>
+                  <path d="M21 12a9 9 0 1 1-6.219-8.56"/>
+                </svg>
+                Checking…
+              </>
+            ) : (
+              <>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                  <path d="m16 20 2 2 4-4"/>
+                </svg>
+                Check answer
+              </>
+            )}
           </button>
         </div>
 
