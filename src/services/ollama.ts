@@ -1,7 +1,10 @@
-import type { OllamaAnalysis } from '../types';
-
 const OLLAMA_BASE = 'http://localhost:11434';
 export const OLLAMA_MODEL = 'llama3.2';
+
+type OllamaAnalysis = {
+  comment: string;
+  patterns: Array<{ title: string; description: string }>;
+};
 
 export async function getAIAnalysis(
   sentences: string[],

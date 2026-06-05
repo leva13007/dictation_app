@@ -306,57 +306,37 @@
   border-radius: 3px;
   padding: 0 2px;
 }
+.dwPunct {
+  text-decoration: underline;
+  text-decoration-style: dashed;
+  text-decoration-color: var(--warning);
+  text-underline-offset: 3px;
+}
+.dwSplit {
+  color: oklch(52% 0.19 55);
+  background: oklch(97% 0.04 55);
+  border-radius: 3px;
+  padding: 0 2px;
+  text-decoration: underline;
+  text-decoration-style: dashed;
+  text-underline-offset: 2px;
+}
+:global([data-theme="dark"]) .dwSplit {
+  color: oklch(72% 0.14 55);
+  background: oklch(22% 0.05 55);
+}
+.dwCorrection {
+  /* font-size: 0.82em; */
+  color: var(--text-primary);
+  /* opacity: 0.85; */
+  font-style: italic;
+  font-weight: var(--weight-medium);
+}
 .diffEmpty {
   font-size: 13px;
   font-style: italic;
   color: var(--text-tertiary);
 }
-
-/* ── AI Analysis ────────────────────── */
-.llmCard {
-  background: var(--bg-surface);
-  border: 1px solid var(--border-soft);
-  border-radius: 11px;
-  overflow: hidden;
-}
-.llmHdr {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 10px 16px;
-  background: var(--bg-sunken);
-  border-bottom: 1px solid var(--border-soft);
-  font-size: 10.5px;
-  font-weight: var(--weight-bold);
-  color: var(--text-secondary);
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-}
-.llmIco {
-  width: 22px; height: 22px;
-  border-radius: 6px;
-  background: var(--accent-subtle);
-  color: var(--accent-text);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.llmBody { padding: 20px; display: flex; flex-direction: column; gap: 16px; }
-.llmItem { display: flex; gap: 14px; align-items: flex-start; }
-.llmItem + .llmItem { padding-top: 16px; border-top: 1px solid var(--border-soft); }
-.llmItemIco {
-  width: 34px; height: 34px;
-  border-radius: 9px;
-  flex-shrink: 0;
-  background: var(--accent-subtle);
-  color: var(--accent-text);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.llmItemBody { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
-.llmItemTitle { font-size: 13px; font-weight: var(--weight-bold); color: var(--text-primary); }
-.llmItemText  { font-size: 13px; color: var(--text-secondary); line-height: 1.55; }
 
 /* ── Footer ──────────────────────────── */
 .rfooter {

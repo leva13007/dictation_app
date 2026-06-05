@@ -55,7 +55,8 @@ export const formatDuration = (seconds: number): string => {
 
 export type WordDiffToken = {
   text: string;
-  cls: 'correct' | 'wrong' | 'missing' | 'extra';
+  cls: 'correct' | 'wrong' | 'missing' | 'extra' | 'split' | 'merge' | 'punct';
+  expected?: string; // wrong: correct spelling; split: merged form (set on last token of group)
 };
 
 export type SentenceDiff = {
@@ -66,11 +67,6 @@ export type SentenceDiff = {
   clean: boolean;
 };
 
-export type OllamaAnalysis = {
-  comment: string;
-  patterns: Array<{ title: string; description: string }>;
-};
-
 export type CheckResult = {
   sentences: SentenceDiff[];
   totalWords: number;
@@ -78,6 +74,5 @@ export type CheckResult = {
   spellingErrors: string[];
   missingWords: string[];
   extraWords: string[];
-  aiAnalysis: OllamaAnalysis | null;
   timeSpent: number;
 };

@@ -64,19 +64,80 @@ function buildOps(expected: Token[], actual: Token[]): Op[] {
 function processChunk(dels: Token[], ins: Token[]): WordDiffToken[] {
   const tokens: WordDiffToken[] = [];
   const usedIns = new Set<number>();
+  const resolvedDels = new Set<number>();
 
-  for (const del of dels) {
-    const matchIdx = ins.findIndex(
+  // Single pass over dels in order — preserves sentence reading order in output.
+  // Priority per del position: merge > misspelling > split > missing.
+  for (let di = 0; di < dels.length; di++) {
+    if (resolvedDels.has(di)) continue;
+    const del = dels[di];
+
+    // 1. Merge: consecutive dels starting here concatenate into one actual word
+    let mergeFound = false;
+    let mergeConcat = del.normalized;
+    for (let end = di + 1; end < dels.length && !resolvedDels.has(end); end++) {
+      mergeConcat += dels[end].normalized;
+      if (mergeConcat.length > 30) break;
+      const matchIdx = ins.findIndex(
+        (tok, idx) => !usedIns.has(idx) && tok.normalized === mergeConcat,
+      );
+      if (matchIdx >= 0) {
+        const expected = dels.slice(di, end + 1).map(d => d.original).join(' ');
+        tokens.push({ text: ins[matchIdx].original, cls: 'merge', expected });
+        usedIns.add(matchIdx);
+        for (let k = di; k <= end; k++) resolvedDels.add(k);
+        di = end;
+        mergeFound = true;
+        break;
+      }
+    }
+    if (mergeFound) continue;
+
+    // 2. Misspelling: this del ≈ one actual word (edit distance)
+    const misspellIdx = ins.findIndex(
       (tok, idx) => !usedIns.has(idx) && isMisspelling(del.normalized, tok.normalized),
     );
-    if (matchIdx >= 0) {
-      tokens.push({ text: ins[matchIdx].original, cls: 'wrong' });
-      usedIns.add(matchIdx);
-    } else {
-      tokens.push({ text: del.original, cls: 'missing' });
+    if (misspellIdx >= 0) {
+      tokens.push({ text: ins[misspellIdx].original, cls: 'wrong', expected: del.original });
+      usedIns.add(misspellIdx);
+      resolvedDels.add(di);
+      continue;
     }
+
+    // 3. Split: this del was written as consecutive actual words
+    const available = ins
+      .map((tok, idx) => ({ tok, idx }))
+      .filter(({ idx }) => !usedIns.has(idx));
+    let splitFound = false;
+    outer: for (let start = 0; start < available.length; start++) {
+      let splitConcat = '';
+      for (let end = start; end < available.length; end++) {
+        if (end > start && available[end].idx !== available[end - 1].idx + 1) break;
+        splitConcat += available[end].tok.normalized;
+        if (splitConcat === del.normalized && end > start) {
+          for (let k = start; k <= end; k++) {
+            tokens.push({
+              text: available[k].tok.original,
+              cls: 'split',
+              expected: k === end ? del.original : undefined,
+            });
+            usedIns.add(available[k].idx);
+          }
+          resolvedDels.add(di);
+          splitFound = true;
+          break outer;
+        }
+        if (splitConcat.length >= del.normalized.length) break;
+      }
+    }
+    if (splitFound) continue;
+
+    // 4. Missing: user omitted this word entirely
+    tokens.push({ text: del.original, cls: 'missing' });
+    resolvedDels.add(di);
   }
 
+  // Remaining ins → extra (words the user added that weren't expected)
   ins.forEach((tok, idx) => {
     if (!usedIns.has(idx)) tokens.push({ text: tok.original, cls: 'extra' });
   });
@@ -101,7 +162,12 @@ export function diffSentence(expected: string, actual: string): WordDiffToken[] 
   for (const op of ops) {
     if (op.type === 'match') {
       flush();
-      tokens.push({ text: op.b.original, cls: 'correct' });
+      if (op.a.original === op.b.original) {
+        tokens.push({ text: op.b.original, cls: 'correct' });
+      } else {
+        // Word matched (normalized), but original differs — punctuation or case error
+        tokens.push({ text: op.b.original, cls: 'punct', expected: op.a.original });
+      }
     } else if (op.type === 'del') {
       dels.push(op.a);
     } else {
