@@ -2,7 +2,6 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { ResultView } from '../components/ResultView';
 import { TopBar } from '../components/TopBar';
-import { getAIAnalysis } from '../services/ollama';
 import {
   type CheckResult,
   type PlaylistRecord,
@@ -164,23 +163,7 @@ export const PlayerPage = () => {
     const userLines = text.split('\n').map(l => l.trim());
     const diff = computeDiff(playlist, userLines);
 
-    let aiAnalysis = null;
-    try {
-      aiAnalysis = await getAIAnalysis(
-        playlist.map(p => p.text),
-        userLines,
-        {
-          spellingErrors: diff.spellingErrors,
-          missingWords: diff.missingWords,
-          extraWords: diff.extraWords,
-          accuracy: diff.accuracy,
-        },
-      );
-    } catch {
-      // Ollama not running — show results without AI analysis
-    }
-
-    setCheckResult({ ...diff, aiAnalysis, timeSpent });
+    setCheckResult({ ...diff, timeSpent });
     setCheckPhase('done');
   }, [text, playlist]);
 

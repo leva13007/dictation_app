@@ -30,7 +30,7 @@ function formatTime(seconds: number): string {
 }
 
 export const ResultView = ({ title, level, result, onTryAgain, onBack }: Props) => {
-  const { sentences, totalWords, accuracy, spellingErrors, missingWords, extraWords, aiAnalysis, timeSpent } = result;
+  const { sentences, totalWords, accuracy, spellingErrors, missingWords, extraWords, timeSpent } = result;
 
   const color = scoreColor(accuracy);
   const pct = `${accuracy}%`;
@@ -78,23 +78,11 @@ export const ResultView = ({ title, level, result, onTryAgain, onBack }: Props) 
             <div className={styles.ringLbl}>{scoreLabel(accuracy)}</div>
           </div>
           <div className={styles.heroComment}>
-            {aiAnalysis ? (
-              <>
-                <p className={styles.heroCommentText}>"{aiAnalysis.comment}"</p>
-                <div className={styles.heroCommentBy}>
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--accent)' }}>
-                    <path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/>
-                  </svg>
-                  Dictify AI Review
-                </div>
-              </>
-            ) : (
-              <p className={styles.heroCommentText} style={{ fontStyle: 'normal', color: 'var(--text-secondary)' }}>
-                {spellingCount + missingCount + extraCount === 0
-                  ? 'Perfect score — no errors detected!'
-                  : `You made ${spellingCount + missingCount + extraCount} error${spellingCount + missingCount + extraCount !== 1 ? 's' : ''} across ${sentences.length} sentence${sentences.length !== 1 ? 's' : ''}.`}
-              </p>
-            )}
+            <p className={styles.heroCommentText} style={{ fontStyle: 'normal', color: 'var(--text-secondary)' }}>
+              {spellingCount + missingCount + extraCount === 0
+                ? 'Perfect score — no errors detected!'
+                : `You made ${spellingCount + missingCount + extraCount} error${spellingCount + missingCount + extraCount !== 1 ? 's' : ''} across ${sentences.length} sentence${sentences.length !== 1 ? 's' : ''}.`}
+            </p>
           </div>
         </div>
 
@@ -180,11 +168,25 @@ export const ResultView = ({ title, level, result, onTryAgain, onBack }: Props) 
                     )}
                   </div>
                   <div className={styles.diffWords}>
-                    {s.tokens.map((tok, j) => (
-                      <span key={j} className={`${styles.dw} ${styles[`dw${tok.cls.charAt(0).toUpperCase() + tok.cls.slice(1)}`]}`}>
-                        {j > 0 ? ' ' : ''}{tok.text}
-                      </span>
-                    ))}
+                    {s.tokens.flatMap((tok, j) => {
+                      const cssBase = tok.cls === 'merge'
+                        ? 'dwWrong'
+                        : `dw${tok.cls.charAt(0).toUpperCase() + tok.cls.slice(1)}`;
+                      const clsName = cssBase as keyof typeof styles;
+                      const prefix = j > 0 ? ' ' : '';
+                      const main = (
+                        <span key={j} className={`${styles.dw} ${styles[clsName]}`}>
+                          {prefix}{tok.text}
+                        </span>
+                      );
+                      if ((tok.cls === 'wrong' || tok.cls === 'split' || tok.cls === 'merge' || tok.cls === 'punct') && tok.expected) {
+                        return [
+                          main,
+                          <span key={`${j}c`} className={styles.dwCorrection}> → {tok.expected}</span>,
+                        ];
+                      }
+                      return main;
+                    })}
                     {s.tokens.length === 0 && (
                       <span className={styles.diffEmpty}>(not typed)</span>
                     )}
@@ -194,36 +196,6 @@ export const ResultView = ({ title, level, result, onTryAgain, onBack }: Props) 
             </div>
           </div>
         </div>
-
-        {/* AI Analysis */}
-        {aiAnalysis && aiAnalysis.patterns?.length > 0 && (
-          <div className={styles.llmCard}>
-            <div className={styles.llmHdr}>
-              <div className={styles.llmIco}>
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M12 8V4H8"/><rect width="16" height="12" x="4" y="8" rx="2"/>
-                  <path d="M2 14h2M20 14h2M15 13v2M9 13v2"/>
-                </svg>
-              </div>
-              AI Analysis
-            </div>
-            <div className={styles.llmBody}>
-              {aiAnalysis.patterns.map((item, i) => (
-                <div key={i} className={styles.llmItem}>
-                  <div className={styles.llmItemIco}>
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/>
-                    </svg>
-                  </div>
-                  <div className={styles.llmItemBody}>
-                    <div className={styles.llmItemTitle}>{item.title}</div>
-                    <div className={styles.llmItemText}>{item.description}</div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
 
       </main>
 
