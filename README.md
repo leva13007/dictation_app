@@ -79,3 +79,7 @@ All shortcuts use `Ctrl` + [key] for consistency across platforms (Windows, macO
 ```
 
 That is all that is needed to run or tweak the app. Happy dictating!
+
+## Next Step
+
+Implement check-answer logic in `PlayerPage.tsx` — the button exists but has no functionality yet.

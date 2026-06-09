@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { ResultView } from '../components/ResultView';
+import { ShortcutsPanel } from '../components/ShortcutsPanel';
 import { TopBar } from '../components/TopBar';
 import {
   type CheckResult,
@@ -43,7 +44,15 @@ export const PlayerPage = () => {
   const [checkResult, setCheckResult] = useState<CheckResult | null>(null);
   const startTimeRef = useRef<number | null>(null);
 
+  const [showShortcuts, setShowShortcuts] = useState(false);
+
   const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  useEffect(() => {
+    if (!localStorage.getItem('dictify-shortcuts-seen')) {
+      setShowShortcuts(true);
+    }
+  }, []);
 
   useEffect(() => {
     if (!id) return;
@@ -176,8 +185,14 @@ export const PlayerPage = () => {
     setPlaying(false);
   }, []);
 
+  const closeShortcuts = useCallback((dontShowAgain: boolean) => {
+    if (dontShowAgain) localStorage.setItem('dictify-shortcuts-seen', '1');
+    setShowShortcuts(false);
+  }, []);
+
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && showShortcuts) { e.preventDefault(); setShowShortcuts(false); return; }
       if (e.ctrlKey) {
         if (e.key === 'q') { e.preventDefault(); prev(); }
         if (e.key === 'w') { e.preventDefault(); togglePlay(); }
@@ -188,7 +203,7 @@ export const PlayerPage = () => {
     };
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
-  }, [prev, togglePlay, replay, next, toggleHint]);
+  }, [prev, togglePlay, replay, next, toggleHint, showShortcuts]);
 
   const formatTime = (seconds: number) => {
     const m = Math.floor(seconds / 60);
@@ -263,6 +278,17 @@ export const PlayerPage = () => {
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/>
                 <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
+              </svg>
+            </button>
+            <button
+              className={styles.ibtn}
+              aria-label="Show keyboard shortcuts"
+              onClick={() => setShowShortcuts(true)}
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="12" cy="12" r="10"/>
+                <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
+                <path d="M12 17h.01"/>
               </svg>
             </button>
           </div>
@@ -396,6 +422,8 @@ export const PlayerPage = () => {
         </div>
 
       </main>
+
+      {showShortcuts && <ShortcutsPanel onClose={closeShortcuts} />}
 
       {/* Player bar */}
       <footer className={styles.pbar} aria-label="Audio player">
